@@ -14,9 +14,9 @@ export function SiteHeader() {
           <span className="font-display text-xl font-semibold tracking-tight">Lumo AI</span>
         </Link>
         <nav className="hidden items-center gap-8 text-sm text-muted-foreground md:flex">
-          <Link to="/" hash="how" className="hover:text-foreground">How it works</Link>
+          <a href="/#how" className="hover:text-foreground">How it works</a>
           <Link to="/pricing" className="hover:text-foreground">Pricing</Link>
-          <Link to="/" hash="faq" className="hover:text-foreground">FAQ</Link>
+          <a href="/#faq" className="hover:text-foreground">FAQ</a>
         </nav>
         <div className="flex items-center gap-2">
           {!loading && user ? (
@@ -29,9 +29,7 @@ export function SiteHeader() {
                 <Link to="/auth">Sign in</Link>
               </Button>
               <Button asChild size="sm">
-                <Link to="/auth" search={{ mode: "signup" }}>
-                  Start free
-                </Link>
+                <Link to="/auth">Start free</Link>
               </Button>
             </>
           )}
