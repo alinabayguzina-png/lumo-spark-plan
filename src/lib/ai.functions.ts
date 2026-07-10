@@ -143,7 +143,9 @@ export const generateContentPlan = createServerFn({ method: "POST" })
           brand_tone: biz.brand_tone,
           platforms: biz.platforms,
         },
-        posts: { theme: plan.theme ?? "", pillars: plan.pillars ?? [], items: posts },
+        posts: JSON.parse(
+          JSON.stringify({ theme: plan.theme ?? "", pillars: plan.pillars ?? [], items: posts }),
+        ),
       })
       .select("id")
       .single();
