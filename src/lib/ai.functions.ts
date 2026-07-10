@@ -76,6 +76,27 @@ export const generateContentPlan = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase: sb, userId } = context;
 
+    const { data: profile, error: profileErr } = await sb
+      .from("profiles")
+      .select("plan")
+      .eq("id", userId)
+      .maybeSingle();
+    if (profileErr) throw new Error(profileErr.message);
+
+    const userPlan = profile?.plan ?? "free";
+    if (userPlan === "free") {
+      const { count, error: countErr } = await sb
+        .from("content_plans")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", userId);
+      if (countErr) throw new Error(countErr.message);
+      if ((count ?? 0) >= 1) {
+        throw new Error(
+          "Free plan is limited to 1 content plan. Upgrade to Pro for unlimited generations.",
+        );
+      }
+    }
+
     const { data: biz, error: bizErr } = await sb
       .from("business_profiles")
       .select("*")
