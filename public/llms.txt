@@ -1,0 +1,9 @@
+# Lumo AI
+
+> Lumo AI turns your business into a month of scroll-stopping social content ideas — captions, hooks, and video concepts across every platform.
+
+Lumo AI is a SaaS tool for creators, founders, and agencies. Users add their business info once, then generate full monthly social media content plans in seconds.
+
+## Pages
+- [Home](/): Product overview and how it works
+- [Pricing](/pricing): Starter, Pro, and Studio plans
