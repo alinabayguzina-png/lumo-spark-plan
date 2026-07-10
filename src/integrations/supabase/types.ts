@@ -14,7 +14,105 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      business_profiles: {
+        Row: {
+          brand_tone: string | null
+          business_name: string
+          created_at: string
+          description: string | null
+          goals: string | null
+          id: string
+          industry: string | null
+          platforms: string[]
+          target_audience: string | null
+          updated_at: string
+          user_id: string
+          website: string | null
+        }
+        Insert: {
+          brand_tone?: string | null
+          business_name: string
+          created_at?: string
+          description?: string | null
+          goals?: string | null
+          id?: string
+          industry?: string | null
+          platforms?: string[]
+          target_audience?: string | null
+          updated_at?: string
+          user_id: string
+          website?: string | null
+        }
+        Update: {
+          brand_tone?: string | null
+          business_name?: string
+          created_at?: string
+          description?: string | null
+          goals?: string | null
+          id?: string
+          industry?: string | null
+          platforms?: string[]
+          target_audience?: string | null
+          updated_at?: string
+          user_id?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
+      content_plans: {
+        Row: {
+          business_snapshot: Json | null
+          created_at: string
+          id: string
+          month: string | null
+          posts: Json
+          title: string
+          user_id: string
+        }
+        Insert: {
+          business_snapshot?: Json | null
+          created_at?: string
+          id?: string
+          month?: string | null
+          posts?: Json
+          title: string
+          user_id: string
+        }
+        Update: {
+          business_snapshot?: Json | null
+          created_at?: string
+          id?: string
+          month?: string | null
+          posts?: Json
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          id: string
+          plan: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          id: string
+          plan?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          plan?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
