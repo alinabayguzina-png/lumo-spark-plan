@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /business
+Disallow: /generate
+Disallow: /history
+Disallow: /plan/
+Disallow: /auth

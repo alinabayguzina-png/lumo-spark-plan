@@ -17,6 +17,7 @@ import { Route as AuthenticatedHistoryRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedGenerateRouteImport } from './routes/_authenticated/generate'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedBusinessRouteImport } from './routes/_authenticated/business'
+import { Route as AuthenticatedPlanIdRouteImport } from './routes/_authenticated/plan.$id'
 
 const PricingRoute = PricingRouteImport.update({
   id: '/pricing',
@@ -57,6 +58,11 @@ const AuthenticatedBusinessRoute = AuthenticatedBusinessRouteImport.update({
   path: '/business',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPlanIdRoute = AuthenticatedPlanIdRouteImport.update({
+  id: '/plan/$id',
+  path: '/plan/$id',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -66,6 +72,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/generate': typeof AuthenticatedGenerateRoute
   '/history': typeof AuthenticatedHistoryRoute
+  '/plan/$id': typeof AuthenticatedPlanIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -75,6 +82,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/generate': typeof AuthenticatedGenerateRoute
   '/history': typeof AuthenticatedHistoryRoute
+  '/plan/$id': typeof AuthenticatedPlanIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -86,6 +94,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/generate': typeof AuthenticatedGenerateRoute
   '/_authenticated/history': typeof AuthenticatedHistoryRoute
+  '/_authenticated/plan/$id': typeof AuthenticatedPlanIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -97,6 +106,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/generate'
     | '/history'
+    | '/plan/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -106,6 +116,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/generate'
     | '/history'
+    | '/plan/$id'
   id:
     | '__root__'
     | '/'
@@ -116,6 +127,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/generate'
     | '/_authenticated/history'
+    | '/_authenticated/plan/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -183,6 +195,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBusinessRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/plan/$id': {
+      id: '/_authenticated/plan/$id'
+      path: '/plan/$id'
+      fullPath: '/plan/$id'
+      preLoaderRoute: typeof AuthenticatedPlanIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -191,6 +210,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedGenerateRoute: typeof AuthenticatedGenerateRoute
   AuthenticatedHistoryRoute: typeof AuthenticatedHistoryRoute
+  AuthenticatedPlanIdRoute: typeof AuthenticatedPlanIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -198,6 +218,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedGenerateRoute: AuthenticatedGenerateRoute,
   AuthenticatedHistoryRoute: AuthenticatedHistoryRoute,
+  AuthenticatedPlanIdRoute: AuthenticatedPlanIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
