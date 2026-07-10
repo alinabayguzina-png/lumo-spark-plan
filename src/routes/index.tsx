@@ -228,6 +228,3 @@ const FAQS = [
   { q: "How is a month structured?", a: "Roughly 4 posts/week across your platforms, balanced across content pillars." },
   { q: "Can I regenerate a plan?", a: "Yes — every plan is saved to your history and you can generate a new one anytime." },
 ];
-  );
-}
-
