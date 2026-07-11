@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getPlan } from "@/lib/plans.functions";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Video, Camera, FileText, Layers, Copy } from "lucide-react";
+import { ArrowLeft, Video, Camera, FileText, Layers, Copy, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/plan/$id")({
@@ -95,9 +95,15 @@ function PlanPage() {
         {items.map((p, i) => (
           <article
             key={i}
-            className="rounded-2xl border border-border bg-card p-6 transition-colors hover:border-primary/40"
+            className="group relative rounded-2xl border border-border bg-card p-6 transition-colors hover:border-primary/60"
           >
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/60 pb-3 text-xs text-muted-foreground">
+            <Link
+              to="/plan/$id/post/$index"
+              params={{ id: data.id, index: String(i) }}
+              className="absolute inset-0 z-10 rounded-2xl"
+              aria-label="Open execution plan"
+            />
+            <div className="relative z-20 flex flex-wrap items-center justify-between gap-3 border-b border-border/60 pb-3 text-xs text-muted-foreground">
               <div className="flex items-center gap-2">
                 <span className="grid h-7 w-7 place-items-center rounded-md bg-primary/15 text-primary">
                   {iconFor(p.format)}
@@ -115,7 +121,7 @@ function PlanPage() {
                 </span>
                 <button
                   onClick={() => copyPost(p)}
-                  className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 hover:border-primary/60 hover:text-foreground"
+                  className="relative z-30 inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 hover:border-primary/60 hover:text-foreground"
                 >
                   <Copy className="h-3 w-3" /> Copy
                 </button>
@@ -136,7 +142,7 @@ function PlanPage() {
                 {p.caption}
               </div>
             )}
-            <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
+            <div className="relative z-20 mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
               {p.hashtags?.length ? (
                 <div className="text-primary/90">{p.hashtags.join(" ")}</div>
               ) : null}
@@ -146,6 +152,14 @@ function PlanPage() {
                   {p.cta}
                 </div>
               )}
+            </div>
+            <div className="relative z-20 mt-4 flex items-center justify-between border-t border-border/60 pt-3 text-xs">
+              <span className="text-muted-foreground">
+                Tap for a full scene-by-scene execution plan
+              </span>
+              <span className="inline-flex items-center gap-1 text-primary group-hover:translate-x-0.5 transition-transform">
+                Open <ArrowRight className="h-3 w-3" />
+              </span>
             </div>
           </article>
         ))}
