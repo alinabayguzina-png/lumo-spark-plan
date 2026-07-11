@@ -2,9 +2,10 @@ import { Link, useRouter, useRouterState } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/lib/auth-hooks";
 import { Button } from "@/components/ui/button";
-import { Sparkles, LayoutDashboard, Building2, Wand2, History, LogOut, Menu } from "lucide-react";
+import { LayoutDashboard, Building2, Wand2, History, LogOut, Menu, Crown } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState, type ReactNode } from "react";
+import { UsageBadge } from "@/components/usage-badge";
 
 const NAV = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -40,7 +41,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <span className="grid h-8 w-8 place-items-center rounded-md bg-primary text-primary-foreground font-display font-bold">
             L
           </span>
-          <span className="font-display text-lg font-semibold">Lumo AI</span>
+          <span className="font-display text-lg font-semibold">Luzo AI</span>
         </div>
         <nav className="flex flex-col gap-1 p-3">
           {NAV.map((item) => {
@@ -63,6 +64,14 @@ export function AppShell({ children }: { children: ReactNode }) {
               </Link>
             );
           })}
+          <Link
+            to="/pricing"
+            onClick={() => setOpen(false)}
+            className="mt-2 flex items-center gap-3 rounded-md border border-primary/40 bg-primary/10 px-3 py-2 text-sm text-primary hover:bg-primary/15"
+          >
+            <Crown className="h-4 w-4" />
+            Switch Plan
+          </Link>
         </nav>
         <div className="absolute inset-x-0 bottom-0 border-t border-sidebar-border p-3">
           <div className="mb-3 truncate rounded-md px-3 py-2 text-xs text-muted-foreground">
@@ -84,11 +93,10 @@ export function AppShell({ children }: { children: ReactNode }) {
           >
             <Menu className="h-4 w-4" />
           </button>
-          <div className="hidden items-center gap-2 text-sm text-muted-foreground md:flex">
-            <Sparkles className="h-4 w-4 text-primary" />
-            <span>Ready to create</span>
+          <div className="ml-3 flex-1 md:ml-0">
+            <UsageBadge />
           </div>
-          <Button asChild size="sm" className="ml-auto md:ml-0">
+          <Button asChild size="sm">
             <Link to="/generate">New plan</Link>
           </Button>
         </header>

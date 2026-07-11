@@ -7,7 +7,7 @@ import { Trash2, History as HistoryIcon } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/history")({
-  head: () => ({ meta: [{ title: "History — Lumo AI" }] }),
+  head: () => ({ meta: [{ title: "History — Luzo AI" }] }),
   component: HistoryPage,
 });
 

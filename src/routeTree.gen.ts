@@ -19,6 +19,7 @@ import { Route as AuthenticatedGenerateRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedBusinessRouteImport } from './routes/_authenticated/business'
 import { Route as AuthenticatedPlanIdRouteImport } from './routes/_authenticated/plan.$id'
+import { Route as AuthenticatedPlanIdPostIndexRouteImport } from './routes/_authenticated/plan_.$id.post.$index'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -69,6 +70,12 @@ const AuthenticatedPlanIdRoute = AuthenticatedPlanIdRouteImport.update({
   path: '/plan/$id',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPlanIdPostIndexRoute =
+  AuthenticatedPlanIdPostIndexRouteImport.update({
+    id: '/plan_/$id/post/$index',
+    path: '/plan/$id/post/$index',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -80,6 +87,7 @@ export interface FileRoutesByFullPath {
   '/generate': typeof AuthenticatedGenerateRoute
   '/history': typeof AuthenticatedHistoryRoute
   '/plan/$id': typeof AuthenticatedPlanIdRoute
+  '/plan/$id/post/$index': typeof AuthenticatedPlanIdPostIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -91,6 +99,7 @@ export interface FileRoutesByTo {
   '/generate': typeof AuthenticatedGenerateRoute
   '/history': typeof AuthenticatedHistoryRoute
   '/plan/$id': typeof AuthenticatedPlanIdRoute
+  '/plan/$id/post/$index': typeof AuthenticatedPlanIdPostIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -104,6 +113,7 @@ export interface FileRoutesById {
   '/_authenticated/generate': typeof AuthenticatedGenerateRoute
   '/_authenticated/history': typeof AuthenticatedHistoryRoute
   '/_authenticated/plan/$id': typeof AuthenticatedPlanIdRoute
+  '/_authenticated/plan_/$id/post/$index': typeof AuthenticatedPlanIdPostIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -117,6 +127,7 @@ export interface FileRouteTypes {
     | '/generate'
     | '/history'
     | '/plan/$id'
+    | '/plan/$id/post/$index'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -128,6 +139,7 @@ export interface FileRouteTypes {
     | '/generate'
     | '/history'
     | '/plan/$id'
+    | '/plan/$id/post/$index'
   id:
     | '__root__'
     | '/'
@@ -140,6 +152,7 @@ export interface FileRouteTypes {
     | '/_authenticated/generate'
     | '/_authenticated/history'
     | '/_authenticated/plan/$id'
+    | '/_authenticated/plan_/$id/post/$index'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -222,6 +235,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPlanIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/plan_/$id/post/$index': {
+      id: '/_authenticated/plan_/$id/post/$index'
+      path: '/plan/$id/post/$index'
+      fullPath: '/plan/$id/post/$index'
+      preLoaderRoute: typeof AuthenticatedPlanIdPostIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -231,6 +251,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedGenerateRoute: typeof AuthenticatedGenerateRoute
   AuthenticatedHistoryRoute: typeof AuthenticatedHistoryRoute
   AuthenticatedPlanIdRoute: typeof AuthenticatedPlanIdRoute
+  AuthenticatedPlanIdPostIndexRoute: typeof AuthenticatedPlanIdPostIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -239,6 +260,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedGenerateRoute: AuthenticatedGenerateRoute,
   AuthenticatedHistoryRoute: AuthenticatedHistoryRoute,
   AuthenticatedPlanIdRoute: AuthenticatedPlanIdRoute,
+  AuthenticatedPlanIdPostIndexRoute: AuthenticatedPlanIdPostIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

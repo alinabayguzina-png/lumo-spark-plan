@@ -30,7 +30,7 @@ function Index() {
               A month of scroll-<span className="italic text-primary">stopping</span> content, in one click.
             </h1>
             <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
-              Lumo AI studies your business and generates a full month of video and photo ideas
+              Luzo AI studies your business and generates a full month of video and photo ideas
               designed to grow your brand — hooks, concepts, captions and posting times, ready to shoot.
             </p>
             <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row">
@@ -160,7 +160,7 @@ function Index() {
 
       <footer className="border-t border-border/60 py-10">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 text-sm text-muted-foreground sm:flex-row sm:px-6">
-          <span>© {new Date().getFullYear()} Lumo AI. Built for creators.</span>
+          <span>© {new Date().getFullYear()} Luzo AI. Built for creators.</span>
           <div className="flex items-center gap-6">
             <Link to="/pricing" className="hover:text-foreground">Pricing</Link>
             <a href="/#faq" className="hover:text-foreground">FAQ</a>
@@ -203,7 +203,7 @@ const STEPS = [
   },
   {
     title: "Generate your month",
-    body: "Lumo studies your brand and drafts a full month of video and photo posts.",
+    body: "Luzo studies your brand and drafts a full month of video and photo posts.",
     icon: <Sparkles className="h-5 w-5" />,
   },
   {
@@ -223,8 +223,8 @@ const FEATURES = [
 ];
 
 const FAQS = [
-  { q: "Do I need to be a designer or writer?", a: "No. Lumo hands you hooks, captions and shot lists — you just point a camera." },
-  { q: "Which platforms does Lumo cover?", a: "Instagram, TikTok, LinkedIn, X and YouTube Shorts. You pick which ones matter." },
+  { q: "Do I need to be a designer or writer?", a: "No. Luzo hands you hooks, captions and shot lists — you just point a camera." },
+  { q: "Which platforms does Luzo cover?", a: "Instagram, TikTok, LinkedIn, X and YouTube Shorts. You pick which ones matter." },
   { q: "How is a month structured?", a: "Roughly 4 posts/week across your platforms, balanced across content pillars." },
   { q: "Can I regenerate a plan?", a: "Yes — every plan is saved to your history and you can generate a new one anytime." },
 ];
