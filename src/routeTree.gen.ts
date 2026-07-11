@@ -19,7 +19,7 @@ import { Route as AuthenticatedGenerateRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedBusinessRouteImport } from './routes/_authenticated/business'
 import { Route as AuthenticatedPlanIdRouteImport } from './routes/_authenticated/plan.$id'
-import { Route as AuthenticatedPlanIdPostIndexRouteImport } from './routes/_authenticated/plan.$id.post.$index'
+import { Route as AuthenticatedPlanIdPostIndexRouteImport } from './routes/_authenticated/plan_.$id.post.$index'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -72,9 +72,9 @@ const AuthenticatedPlanIdRoute = AuthenticatedPlanIdRouteImport.update({
 } as any)
 const AuthenticatedPlanIdPostIndexRoute =
   AuthenticatedPlanIdPostIndexRouteImport.update({
-    id: '/post/$index',
-    path: '/post/$index',
-    getParentRoute: () => AuthenticatedPlanIdRoute,
+    id: '/plan_/$id/post/$index',
+    path: '/plan/$id/post/$index',
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -86,7 +86,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/generate': typeof AuthenticatedGenerateRoute
   '/history': typeof AuthenticatedHistoryRoute
-  '/plan/$id': typeof AuthenticatedPlanIdRouteWithChildren
+  '/plan/$id': typeof AuthenticatedPlanIdRoute
   '/plan/$id/post/$index': typeof AuthenticatedPlanIdPostIndexRoute
 }
 export interface FileRoutesByTo {
@@ -98,7 +98,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/generate': typeof AuthenticatedGenerateRoute
   '/history': typeof AuthenticatedHistoryRoute
-  '/plan/$id': typeof AuthenticatedPlanIdRouteWithChildren
+  '/plan/$id': typeof AuthenticatedPlanIdRoute
   '/plan/$id/post/$index': typeof AuthenticatedPlanIdPostIndexRoute
 }
 export interface FileRoutesById {
@@ -112,8 +112,8 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/generate': typeof AuthenticatedGenerateRoute
   '/_authenticated/history': typeof AuthenticatedHistoryRoute
-  '/_authenticated/plan/$id': typeof AuthenticatedPlanIdRouteWithChildren
-  '/_authenticated/plan/$id/post/$index': typeof AuthenticatedPlanIdPostIndexRoute
+  '/_authenticated/plan/$id': typeof AuthenticatedPlanIdRoute
+  '/_authenticated/plan_/$id/post/$index': typeof AuthenticatedPlanIdPostIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -152,7 +152,7 @@ export interface FileRouteTypes {
     | '/_authenticated/generate'
     | '/_authenticated/history'
     | '/_authenticated/plan/$id'
-    | '/_authenticated/plan/$id/post/$index'
+    | '/_authenticated/plan_/$id/post/$index'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -235,33 +235,23 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPlanIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/plan/$id/post/$index': {
-      id: '/_authenticated/plan/$id/post/$index'
-      path: '/post/$index'
+    '/_authenticated/plan_/$id/post/$index': {
+      id: '/_authenticated/plan_/$id/post/$index'
+      path: '/plan/$id/post/$index'
       fullPath: '/plan/$id/post/$index'
       preLoaderRoute: typeof AuthenticatedPlanIdPostIndexRouteImport
-      parentRoute: typeof AuthenticatedPlanIdRoute
+      parentRoute: typeof AuthenticatedRouteRoute
     }
   }
 }
-
-interface AuthenticatedPlanIdRouteChildren {
-  AuthenticatedPlanIdPostIndexRoute: typeof AuthenticatedPlanIdPostIndexRoute
-}
-
-const AuthenticatedPlanIdRouteChildren: AuthenticatedPlanIdRouteChildren = {
-  AuthenticatedPlanIdPostIndexRoute: AuthenticatedPlanIdPostIndexRoute,
-}
-
-const AuthenticatedPlanIdRouteWithChildren =
-  AuthenticatedPlanIdRoute._addFileChildren(AuthenticatedPlanIdRouteChildren)
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedBusinessRoute: typeof AuthenticatedBusinessRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedGenerateRoute: typeof AuthenticatedGenerateRoute
   AuthenticatedHistoryRoute: typeof AuthenticatedHistoryRoute
-  AuthenticatedPlanIdRoute: typeof AuthenticatedPlanIdRouteWithChildren
+  AuthenticatedPlanIdRoute: typeof AuthenticatedPlanIdRoute
+  AuthenticatedPlanIdPostIndexRoute: typeof AuthenticatedPlanIdPostIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -269,7 +259,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedGenerateRoute: AuthenticatedGenerateRoute,
   AuthenticatedHistoryRoute: AuthenticatedHistoryRoute,
-  AuthenticatedPlanIdRoute: AuthenticatedPlanIdRouteWithChildren,
+  AuthenticatedPlanIdRoute: AuthenticatedPlanIdRoute,
+  AuthenticatedPlanIdPostIndexRoute: AuthenticatedPlanIdPostIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

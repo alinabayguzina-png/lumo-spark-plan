@@ -35,7 +35,7 @@ import {
   detailedRemainingLabel,
 } from "@/lib/plan-limits";
 
-export const Route = createFileRoute("/_authenticated/plan/$id/post/$index")({
+export const Route = createFileRoute("/_authenticated/plan_/$id/post/$index")({
   head: () => ({ meta: [{ title: "Execution plan — Luzo AI" }] }),
   component: PostDetailPage,
 });
