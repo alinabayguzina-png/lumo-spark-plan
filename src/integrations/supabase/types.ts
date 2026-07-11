@@ -89,6 +89,53 @@ export type Database = {
         }
         Relationships: []
       }
+      detailed_plans: {
+        Row: {
+          content: Json
+          created_at: string
+          id: string
+          input: Json
+          kind: string
+          plan_id: string
+          post_index: number
+          title: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content?: Json
+          created_at?: string
+          id?: string
+          input?: Json
+          kind: string
+          plan_id: string
+          post_index: number
+          title?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: Json
+          created_at?: string
+          id?: string
+          input?: Json
+          kind?: string
+          plan_id?: string
+          post_index?: number
+          title?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "detailed_plans_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "content_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
