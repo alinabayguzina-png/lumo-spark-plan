@@ -4,7 +4,9 @@ import { useServerFn } from "@tanstack/react-start";
 import { getMyBusiness } from "@/lib/business.functions";
 import { listMyPlans } from "@/lib/plans.functions";
 import { Button } from "@/components/ui/button";
-import { Wand2, Building2, History, Sparkles } from "lucide-react";
+import { Wand2, Building2, History, Crown } from "lucide-react";
+import { useUsage } from "@/components/usage-badge";
+import { PLAN_LABEL, detailedRemainingLabel } from "@/lib/plan-limits";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — Luzo AI" }] }),
@@ -16,6 +18,7 @@ function Dashboard() {
   const plansFn = useServerFn(listMyPlans);
   const biz = useQuery({ queryKey: ["business"], queryFn: () => bizFn() });
   const plans = useQuery({ queryKey: ["plans"], queryFn: () => plansFn() });
+  const usage = useUsage();
 
   const hasBiz = !!biz.data;
   const recent = (plans.data ?? []).slice(0, 3);
@@ -55,9 +58,9 @@ function Dashboard() {
           to="/history"
         />
         <StatCard
-          icon={<Sparkles className="h-5 w-5" />}
-          label="Plan"
-          value="Free"
+          icon={<Crown className="h-5 w-5" />}
+          label={usage.data ? detailedRemainingLabel(usage.data.tier, usage.data.detailedUsed) : "Plan"}
+          value={usage.data ? PLAN_LABEL[usage.data.tier] : "Free"}
           to="/pricing"
         />
       </div>
