@@ -10,6 +10,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Sparkles, Loader2 } from "lucide-react";
+import { useUsage } from "@/components/usage-badge";
+import { MONTHLY_PLAN_LIMIT, monthlyRemainingLabel, detailedRemainingLabel } from "@/lib/plan-limits";
+import { UpgradeLock } from "@/components/upgrade-lock";
 
 export const Route = createFileRoute("/_authenticated/generate")({
   head: () => ({ meta: [{ title: "Generate plan — Luzo AI" }] }),
@@ -26,6 +29,7 @@ function GeneratePage() {
   const qc = useQueryClient();
   const nav = useNavigate();
   const { data: biz, isLoading } = useQuery({ queryKey: ["business"], queryFn: () => bizFn() });
+  const usage = useUsage();
 
   const [month, setMonth] = useState(currentMonthLabel());
   const [postsPerWeek, setPostsPerWeek] = useState(4);
@@ -73,8 +77,27 @@ function GeneratePage() {
           For <span className="text-foreground">{biz.business_name}</span> · Platforms:{" "}
           {biz.platforms?.length ? biz.platforms.join(", ") : "not set"}
         </p>
+        {usage.data && (
+          <div className="mt-4 flex flex-wrap gap-2 text-xs">
+            <span className="rounded-full border border-border bg-secondary/40 px-3 py-1 text-muted-foreground">
+              {monthlyRemainingLabel(usage.data.tier, usage.data.monthlyPlansUsed)}
+            </span>
+            <span className="rounded-full border border-border bg-secondary/40 px-3 py-1 text-muted-foreground">
+              {detailedRemainingLabel(usage.data.tier, usage.data.detailedUsed)}
+            </span>
+          </div>
+        )}
       </div>
 
+      {usage.data &&
+        MONTHLY_PLAN_LIMIT[usage.data.tier] !== null &&
+        usage.data.monthlyPlansUsed >= (MONTHLY_PLAN_LIMIT[usage.data.tier] as number) && (
+          <UpgradeLock
+            title="You've used your free monthly plan"
+            description="Upgrade to Pro or VIP for unlimited monthly content plans."
+            className="mb-6"
+          />
+        )}
       <form onSubmit={submit} className="space-y-6 rounded-2xl border border-border bg-card p-8">
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
