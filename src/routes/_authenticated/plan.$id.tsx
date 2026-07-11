@@ -7,7 +7,7 @@ import { ArrowLeft, Video, Camera, FileText, Layers, Copy } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/plan/$id")({
-  head: () => ({ meta: [{ title: "Content plan — Lumo AI" }] }),
+  head: () => ({ meta: [{ title: "Content plan — Luzo AI" }] }),
   component: PlanPage,
 });
 

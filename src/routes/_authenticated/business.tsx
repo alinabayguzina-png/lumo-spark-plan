@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/business")({
-  head: () => ({ meta: [{ title: "Business info — Lumo AI" }] }),
+  head: () => ({ meta: [{ title: "Business info — Luzo AI" }] }),
   component: BusinessPage,
 });
 
@@ -79,7 +79,7 @@ function BusinessPage() {
     <div className="max-w-3xl">
       <div className="mb-8">
         <div className="text-xs uppercase tracking-[0.22em] text-primary">Step 1</div>
-        <h1 className="mt-1 text-display text-4xl font-semibold">Tell Lumo about your business.</h1>
+        <h1 className="mt-1 text-display text-4xl font-semibold">Tell Luzo about your business.</h1>
         <p className="mt-2 text-muted-foreground">
           The more specific you are, the sharper the content plan.
         </p>

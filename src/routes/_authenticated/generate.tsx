@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import { Sparkles, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/generate")({
-  head: () => ({ meta: [{ title: "Generate plan — Lumo AI" }] }),
+  head: () => ({ meta: [{ title: "Generate plan — Luzo AI" }] }),
   component: GeneratePage,
 });
 
@@ -55,7 +55,7 @@ function GeneratePage() {
         <Sparkles className="mx-auto mb-4 h-6 w-6 text-primary" />
         <h1 className="font-display text-2xl">Add your business first</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Lumo needs to know your brand before it can draft a plan.
+          Luzo needs to know your brand before it can draft a plan.
         </p>
         <Button asChild className="mt-6">
           <Link to="/business">Add business info</Link>

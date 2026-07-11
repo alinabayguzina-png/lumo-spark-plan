@@ -40,7 +40,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <span className="grid h-8 w-8 place-items-center rounded-md bg-primary text-primary-foreground font-display font-bold">
             L
           </span>
-          <span className="font-display text-lg font-semibold">Lumo AI</span>
+          <span className="font-display text-lg font-semibold">Luzo AI</span>
         </div>
         <nav className="flex flex-col gap-1 p-3">
           {NAV.map((item) => {

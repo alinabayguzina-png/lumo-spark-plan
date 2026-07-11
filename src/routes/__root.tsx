@@ -79,14 +79,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lumo AI — Monthly Social Content Plans, Generated" },
+      { title: "Luzo AI — Monthly Social Content Plans, Generated" },
       {
         name: "description",
         content:
-          "Lumo AI turns your business into a month of scroll-stopping social content ideas — captions, hooks, and video concepts across every platform.",
+          "Luzo AI turns your business into a month of scroll-stopping social content ideas — captions, hooks, and video concepts across every platform.",
       },
-      { name: "author", content: "Lumo AI" },
-      { property: "og:title", content: "Lumo AI — Monthly Social Content Plans, Generated" },
+      { name: "author", content: "Luzo AI" },
+      { property: "og:title", content: "Luzo AI — Monthly Social Content Plans, Generated" },
       {
         property: "og:description",
         content:

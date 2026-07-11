@@ -11,7 +11,7 @@ export function SiteHeader() {
           <span className="grid h-8 w-8 place-items-center rounded-md bg-primary text-primary-foreground font-display text-lg font-bold">
             L
           </span>
-          <span className="font-display text-xl font-semibold tracking-tight">Lumo AI</span>
+          <span className="font-display text-xl font-semibold tracking-tight">Luzo AI</span>
         </Link>
         <nav className="hidden items-center gap-8 text-sm text-muted-foreground md:flex">
           <a href="/#how" className="hover:text-foreground">How it works</a>

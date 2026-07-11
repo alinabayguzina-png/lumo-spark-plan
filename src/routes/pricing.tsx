@@ -6,9 +6,9 @@ import { Check } from "lucide-react";
 export const Route = createFileRoute("/pricing")({
   head: () => ({
     meta: [
-      { title: "Pricing — Lumo AI" },
+      { title: "Pricing — Luzo AI" },
       { name: "description", content: "Simple plans for creators, founders, and agencies. Start free." },
-      { property: "og:title", content: "Pricing — Lumo AI" },
+      { property: "og:title", content: "Pricing — Luzo AI" },
       { property: "og:description", content: "Simple plans for creators, founders, and agencies. Start free." },
     ],
   }),
@@ -19,7 +19,7 @@ const PLANS = [
   {
     name: "Starter",
     price: "$0",
-    tag: "Try Lumo",
+    tag: "Try Luzo",
     desc: "For solo creators just getting started.",
     features: ["1 business profile", "2 plans / month", "Basic hooks + captions", "Post history"],
     cta: "Start free",

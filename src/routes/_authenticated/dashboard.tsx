@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Wand2, Building2, History, Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
-  head: () => ({ meta: [{ title: "Dashboard — Lumo AI" }] }),
+  head: () => ({ meta: [{ title: "Dashboard — Luzo AI" }] }),
   component: Dashboard,
 });
 

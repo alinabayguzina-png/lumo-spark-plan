@@ -13,8 +13,8 @@ import { Sparkles } from "lucide-react";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Sign in — Lumo AI" },
-      { name: "description", content: "Sign in or create your Lumo AI account." },
+      { title: "Sign in — Luzo AI" },
+      { name: "description", content: "Sign in or create your Luzo AI account." },
     ],
   }),
   component: AuthPage,
@@ -56,7 +56,7 @@ function AuthPage() {
           },
         });
         if (error) throw error;
-        toast.success("Welcome to Lumo — you're in.");
+        toast.success("Welcome to Luzo — you're in.");
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email: emailRes.data,
@@ -94,7 +94,7 @@ function AuthPage() {
       <div className="absolute inset-0 bg-grid opacity-30" aria-hidden />
       <div className="relative mx-auto flex min-h-screen max-w-md flex-col justify-center px-4 py-16">
         <Link to="/" className="mb-10 flex items-center gap-2 self-start text-sm text-muted-foreground hover:text-foreground">
-          <Sparkles className="h-4 w-4 text-primary" /> Lumo AI
+          <Sparkles className="h-4 w-4 text-primary" /> Luzo AI
         </Link>
         <div className="rounded-2xl border border-border bg-card p-8 shadow-2xl shadow-black/40">
           <h1 className="text-display text-3xl font-semibold">
