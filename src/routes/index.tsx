@@ -30,7 +30,7 @@ function Index() {
               A month of scroll-<span className="italic text-primary">stopping</span> content, in one click.
             </h1>
             <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
-              Luzo AI studies your business and generates a full month of video and photo ideas
+              Luzo AI studies your business and generates a full month of Reels, Shorts and post ideas
               designed to grow your brand — hooks, concepts, captions and posting times, ready to shoot.
             </p>
             <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row">
@@ -203,7 +203,7 @@ const STEPS = [
   },
   {
     title: "Generate your month",
-    body: "Luzo studies your brand and drafts a full month of video and photo posts.",
+    body: "Luzo studies your brand and drafts a full month of Reels, Shorts and posts.",
     icon: <Sparkles className="h-5 w-5" />,
   },
   {
