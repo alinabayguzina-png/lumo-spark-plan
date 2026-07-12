@@ -25,7 +25,7 @@ export function UsageBadge({ compact = false }: { compact?: boolean }) {
       title="Manage plan"
     >
       <Sparkles className="h-3 w-3" />
-      {compact ? (unlimited ? "Unlimited" : label.replace("Detailed generations: ", "")) : label}
+      {compact ? (unlimited ? "Unlimited" : label.replace("Content generations: ", "")) : label}
       <span className="hidden text-foreground/60 sm:inline">· {PLAN_LABEL[data.tier]}</span>
     </Link>
   );
