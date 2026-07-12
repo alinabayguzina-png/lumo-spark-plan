@@ -29,6 +29,7 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [busy, setBusy] = useState(false);
+  const [forgotOpen, setForgotOpen] = useState(false);
   const navigate = useNavigate();
   const router = useRouter();
 
@@ -56,7 +57,9 @@ function AuthPage() {
           },
         });
         if (error) throw error;
-        toast.success("Welcome to Luzo — you're in.");
+        toast.success("Check your email to confirm your account.");
+        setBusy(false);
+        return;
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email: emailRes.data,
@@ -84,6 +87,24 @@ function AuthPage() {
       navigate({ to: "/dashboard" });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Google sign-in failed.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function sendReset() {
+    const emailRes = emailSchema.safeParse(email);
+    if (!emailRes.success) return toast.error("Enter your account email above first.");
+    setBusy(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(emailRes.data, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) throw error;
+      toast.success("Password reset email sent. Check your inbox.");
+      setForgotOpen(false);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not send reset email.");
     } finally {
       setBusy(false);
     }
@@ -132,6 +153,17 @@ function AuthPage() {
               {busy ? "Please wait…" : mode === "signin" ? "Sign in" : "Create account"}
             </Button>
           </form>
+
+          {mode === "signin" && (
+            <button
+              type="button"
+              onClick={forgotOpen ? sendReset : () => setForgotOpen(true)}
+              className="mt-4 w-full text-center text-xs text-primary hover:underline"
+              disabled={busy}
+            >
+              {forgotOpen ? "Send reset link to email above" : "Forgot password?"}
+            </button>
+          )}
 
           <button
             type="button"
