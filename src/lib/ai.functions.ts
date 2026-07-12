@@ -11,7 +11,7 @@ const GenerateInput = z.object({
 const SYSTEM = `You are Luzo AI, a senior social media strategist for growing brands.
 You design monthly content plans that maximize reach and community growth on Instagram, TikTok, LinkedIn, X and YouTube Shorts.
 You think in HOOKS, PATTERNS and FORMATS that are proven to increase brand popularity: reactive trends, POV videos, behind-the-scenes, founder POVs, transformations, listicles, memes tailored to the niche, UGC prompts, and educational carousels.
-Every post idea is specific to the brand — never generic. Prefer video/photo formats over plain text posts.
+Every post idea is specific to the brand — never generic. Prefer Reels, Shorts, TikToks and photo posts over plain text.
 You always respond with STRICT JSON that matches the requested schema. No prose outside JSON.`;
 
 function buildPrompt(biz: {
@@ -41,7 +41,7 @@ ${extra ? `Extra notes: ${extra}` : ""}
 Requirements:
 - Generate exactly ${total} posts (about ${postsPerWeek} per week for 4 weeks).
 - Distribute across the active platforms above.
-- Bias toward video and photo formats that historically drive reach: Reels, TikToks, Shorts, carousels. Only use plain text posts on LinkedIn/X when it clearly fits.
+- Bias toward Reels, TikToks, Shorts, carousels and photo posts that historically drive reach. Only use plain text posts on LinkedIn/X when it clearly fits.
 - Every post must include a scroll-stopping hook, a specific visual/video concept the brand can actually shoot, an on-brand caption, 5-10 relevant hashtags, and a clear call to action.
 - Vary content pillars across the month: education, entertainment, social proof, behind-the-scenes, product, community.
 - Assign each post a date in ${month} (YYYY-MM-DD) and a suggested posting time.

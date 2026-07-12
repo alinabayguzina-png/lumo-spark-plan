@@ -180,6 +180,7 @@ function PostDetailPage() {
   const detailedUsed = usageQ.data?.detailedUsed ?? 0;
   const outOfQuota =
     detailedLimit !== null && detailedUsed >= detailedLimit && !detailed;
+  const freeBlocked = tier === "free" && !detailed;
 
   return (
     <div className="space-y-8">
@@ -256,14 +257,15 @@ function PostDetailPage() {
           </div>
         </div>
 
-        {outOfQuota ? (
+        {freeBlocked ? (
           <UpgradeLock
-            title={tier === "free" ? "You've used your 1 free detailed plan" : "You've hit the Pro limit (15)"}
-            description={
-              tier === "free"
-                ? "Upgrade to Pro for 15 detailed plans, or VIP for unlimited."
-                : "Upgrade to VIP for unlimited detailed plans + editing + regeneration."
-            }
+            title="Execution plans are a Pro feature"
+            description="Upgrade to Pro for 15 execution plans a month, or VIP for unlimited plus editing & regeneration."
+          />
+        ) : outOfQuota ? (
+          <UpgradeLock
+            title="You've hit the Pro limit (15)"
+            description="Upgrade to VIP for unlimited execution plans + editing + regeneration."
           />
         ) : (
           <Button type="submit" disabled={busy} size="lg" className="w-full sm:w-auto">

@@ -32,9 +32,8 @@ const EditSchema = z.object({
 });
 
 const SYSTEM = `You are Luzo AI, a world-class short-form content director for social media.
-Your job is to turn a single post idea into a fully-produced, shot-ready execution plan engineered for maximum reach, retention, saves and shares.
-You think in HOOKS, PATTERNS INTERRUPTS, RETENTION LOOPS, PAYOFFS, and PLATFORM-NATIVE editing tricks used by the top 1% of creators.
-Never write generic content. Every line is specific to this brand and this idea.
+Your job is to turn a single post idea into a clear, shot-ready execution plan the creator can pick up and film today.
+Be concise and easy to skim. Prefer short, punchy sentences over paragraphs. Keep every field tight — no filler, no fluff.
 You always respond with STRICT JSON that matches the requested schema. No prose outside JSON.`;
 
 function videoPrompt(brand: string, post: PostShape, lengthSec: number | undefined, prefs: string | undefined) {
@@ -53,43 +52,39 @@ User preferences: ${prefs ?? "none"}
 Target length: ~${length} seconds.
 
 Requirements:
-- Break the video into 4–7 scenes covering the full duration. Timestamps must be non-overlapping and cover 0s to ~${length}s.
-- The FIRST scene is a scroll-stopping hook engineered for the first 1.5s: pattern interrupt visual + on-screen text + spoken hook. Explain WHY it stops the scroll.
-- Include a mid-video retention beat (curiosity gap, reveal, or "wait for it") to prevent drop-off around the 40–60% mark.
-- End with a satisfying payoff + a natural CTA that doesn't feel salesy.
-- Every scene must specify: exact voiceover script, on-screen text, camera angle and shot type, b-roll needed, editing move (cut, zoom punch-in, whip pan, speed ramp, jump cut), sfx/music beat.
-- Add music/sfx direction, editing style, viral tips, and 8–12 hashtags optimized for the platform.
+- Break the video into 3–5 scenes covering the full duration. Timestamps must be non-overlapping and cover 0s to ~${length}s.
+- The first scene is a scroll-stopping hook (first 1.5s). Include a brief "why it works" note.
+- End with a payoff + a natural CTA.
+- Keep each scene SHORT and skimmable: one sentence per field. No paragraphs.
+- Add a caption, 5–8 hashtags, viral tips and a posting tip.
 
 Respond with a JSON object of the exact shape:
 {
   "kind": "video",
   "summary": "one-line pitch of the finished video",
   "totalDurationSec": ${length},
-  "hookAnalysis": "why the opening 1.5s will stop the scroll",
+  "hookAnalysis": "one short sentence — why the opening stops the scroll",
   "scenes": [
     {
       "range": "0–2 sec",
       "startSec": 0,
       "endSec": 2,
-      "script": "exact words to say out loud",
-      "onScreenText": "text that appears on screen",
-      "visual": "what the viewer sees (subject, action, setting)",
-      "cameraShot": "e.g. handheld POV close-up, tripod medium, overhead top-down",
-      "cameraAngle": "e.g. eye-level, low-angle, dutch",
-      "bRoll": ["b-roll clip 1", "b-roll clip 2"],
-      "editingMove": "e.g. hard cut, zoom punch, whip pan, freeze frame + text",
-      "sfx": "specific sound effect or music beat",
-      "retentionTip": "why this scene keeps them watching"
+      "script": "exact words to say — one short line",
+      "onScreenText": "text on screen — a few words",
+      "visual": "one line: what the viewer sees",
+      "cameraShot": "e.g. handheld close-up",
+      "editingMove": "e.g. hard cut, zoom punch, whip pan",
+      "retentionTip": "one short line — why it keeps them watching"
     }
   ],
-  "musicDirection": "genre, tempo, energy curve; reference 1–2 trending sound categories",
-  "editingStyle": "pacing, cut frequency, transitions, color/grain",
-  "caption": "final caption with line breaks, engineered for saves/comments",
+  "musicDirection": "one line: vibe + tempo",
+  "editingStyle": "one line: pacing + transitions",
+  "caption": "final caption — 1–3 short lines",
   "hashtags": ["#a", "#b"],
   "cta": "final call to action",
   "viralTips": ["tip 1", "tip 2", "tip 3", "tip 4", "tip 5"],
   "retentionTactics": ["curiosity gap", "reveal", "loop", "pattern interrupt"],
-  "postingTip": "best posting time + first-comment strategy"
+  "postingTip": "best posting time + first-comment strategy — one line"
 }
 
 Return ONLY the JSON. No markdown fences.`;
@@ -109,29 +104,28 @@ User preferences: ${prefs ?? "none"}
 Total slides: exactly ${count}.
 
 Requirements:
-- Slide 1 is the cover — a bold hook that promises value or triggers curiosity. Explain why it earns the tap.
-- Slides 2 → ${count - 1} deliver the payoff in an engineered order (problem → agitation → solution, or list-of-N, or before/after).
-- Slide ${count} is the CTA slide (save, follow, DM, link in bio).
-- Every slide includes: the exact image/photo direction, exact on-slide text/typography direction, layout, dominant color/mood.
-- Return a final IG-optimized caption designed to trigger comments and saves.
+- Slide 1 is the cover hook. Include a short "why it earns the tap" line.
+- Slides 2 → ${count - 1} deliver the payoff (problem → solution, or list-of-N, or before/after).
+- Slide ${count} is the CTA slide.
+- Keep each slide SHORT and skimmable: one sentence per field.
+- Return a final caption + viral tips.
 
 Respond with a JSON object of the exact shape:
 {
   "kind": "slides",
   "summary": "one-line pitch",
-  "coverStrategy": "why slide 1 earns the tap",
+  "coverStrategy": "one short sentence — why slide 1 earns the tap",
   "slides": [
     {
       "index": 1,
       "role": "cover | value | proof | cta",
-      "photoDirection": "exactly what the photo shows (subject, framing, lighting, props)",
-      "onSlideText": "exact text on this slide",
-      "typography": "font style, size, placement, hierarchy",
-      "layout": "e.g. text-top, full-bleed photo with bottom-left overlay",
-      "colorMood": "dominant palette and vibe"
+      "photoDirection": "one line: what the photo shows",
+      "onSlideText": "exact text — keep it short",
+      "layout": "one line: e.g. text-top, full-bleed photo",
+      "colorMood": "one line: palette + vibe"
     }
   ],
-  "caption": "final caption engineered for saves/comments (2–4 short paragraphs)",
+  "caption": "final caption — 1–3 short lines",
   "hashtags": ["#a", "#b"],
   "cta": "final call to action",
   "viralTips": ["tip 1", "tip 2", "tip 3", "tip 4"],
@@ -156,14 +150,14 @@ Respond with a JSON object of the exact shape:
 {
   "kind": "post",
   "summary": "one-line pitch",
-  "hookAnalysis": "why this hook stops the scroll",
-  "visualDirection": "exactly what the image/graphic should look like",
-  "onScreenText": "text overlay if any",
-  "caption": "final caption engineered for engagement",
+  "hookAnalysis": "one short sentence — why the hook works",
+  "visualDirection": "one line: what the image should look like",
+  "onScreenText": "text overlay if any — short",
+  "caption": "final caption — 1–3 short lines",
   "hashtags": ["#a", "#b"],
   "cta": "final call to action",
   "viralTips": ["tip 1", "tip 2", "tip 3"],
-  "postingTip": "best posting time + first-comment strategy"
+  "postingTip": "one line: best posting time + first-comment strategy"
 }
 
 Return ONLY the JSON. No markdown fences.`;
@@ -264,10 +258,10 @@ async function assertDetailedQuota(
 
   if ((count ?? 0) >= limit) {
     if (tier === "free") {
-      throw new Error("Free plan is limited to 1 detailed generation. Upgrade to Pro for 15, or VIP for unlimited.");
+      throw new Error("Execution plans are a Pro feature. Upgrade to Pro for 15/month, or VIP for unlimited.");
     }
     if (tier === "pro") {
-      throw new Error("Pro plan is limited to 15 detailed generations. Upgrade to VIP for unlimited.");
+      throw new Error("Pro plan is limited to 15 execution plans. Upgrade to VIP for unlimited.");
     }
   }
   return tier;
