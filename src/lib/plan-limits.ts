@@ -15,7 +15,7 @@ export const MONTHLY_PLAN_LIMIT: Record<PlanTier, number | null> = {
 
 /** Max detailed per-post generations. `null` = unlimited. */
 export const DETAILED_LIMIT: Record<PlanTier, number | null> = {
-  free: 1,
+  free: 0,
   pro: 15,
   vip: null,
 };
@@ -32,8 +32,9 @@ export function normalizeTier(raw: string | null | undefined): PlanTier {
 
 export function detailedRemainingLabel(tier: PlanTier, used: number): string {
   const limit = DETAILED_LIMIT[tier];
-  if (limit === null) return "Unlimited detailed generations";
-  return `Detailed generations: ${Math.max(0, limit - used)} / ${limit}`;
+  if (limit === null) return "Unlimited content generations";
+  if (limit === 0) return "Content generations: Pro/VIP only";
+  return `Content generations: ${Math.max(0, limit - used)} left`;
 }
 
 export function monthlyRemainingLabel(tier: PlanTier, used: number): string {
