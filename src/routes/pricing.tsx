@@ -23,7 +23,6 @@ const PLANS = [
     desc: "For solo creators just getting started.",
     features: [
       "1 monthly content plan",
-      "1 detailed execution plan",
       "Basic hooks + captions",
       "Post history",
     ],
@@ -37,7 +36,7 @@ const PLANS = [
     desc: "For founders posting weekly across platforms.",
     features: [
       "Unlimited monthly plans",
-      "15 detailed execution plans",
+      "15 execution plans / month",
       "Scene-by-scene video breakdowns",
       "Slide-by-slide carousel plans",
       "Priority AI generation",
@@ -47,12 +46,12 @@ const PLANS = [
   },
   {
     name: "VIP",
-    price: "$29",
+    price: "$19",
     tag: "For power users",
     desc: "For creators serious about going viral.",
     features: [
       "Unlimited monthly plans",
-      "Unlimited detailed generations",
+      "Unlimited execution plans",
       "Edit & regenerate any post",
       "Advanced viral tactics + retention loops",
       "First access to new features",
