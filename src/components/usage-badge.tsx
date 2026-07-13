@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getMyUsage } from "@/lib/usage.functions";
 import { Link } from "@tanstack/react-router";
-import { DETAILED_LIMIT, PLAN_LABEL, detailedRemainingLabel } from "@/lib/plan-limits";
+import { MONTHLY_PLAN_LIMIT, PLAN_LABEL, monthlyRemainingLabel } from "@/lib/plan-limits";
 import { Sparkles } from "lucide-react";
 
 export function useUsage() {
@@ -13,8 +13,8 @@ export function useUsage() {
 export function UsageBadge({ compact = false }: { compact?: boolean }) {
   const { data } = useUsage();
   if (!data) return null;
-  const label = detailedRemainingLabel(data.tier, data.detailedUsed);
-  const unlimited = DETAILED_LIMIT[data.tier] === null;
+  const label = monthlyRemainingLabel(data.tier, data.monthlyPlansUsed);
+  const unlimited = MONTHLY_PLAN_LIMIT[data.tier] === null;
   return (
     <Link
       to="/pricing"
@@ -25,7 +25,7 @@ export function UsageBadge({ compact = false }: { compact?: boolean }) {
       title="Manage plan"
     >
       <Sparkles className="h-3 w-3" />
-      {compact ? (unlimited ? "Unlimited" : label.replace("Content generations: ", "")) : label}
+      {compact ? (unlimited ? "Unlimited" : label.replace("Monthly Plan Generations: ", "")) : label}
       <span className="hidden text-foreground/60 sm:inline">· {PLAN_LABEL[data.tier]}</span>
     </Link>
   );
