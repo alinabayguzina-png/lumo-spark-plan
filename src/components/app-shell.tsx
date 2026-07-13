@@ -74,9 +74,16 @@ export function AppShell({ children }: { children: ReactNode }) {
           </Link>
         </nav>
         <div className="absolute inset-x-0 bottom-0 border-t border-sidebar-border p-3">
-          <div className="mb-3 truncate rounded-md px-3 py-2 text-xs text-muted-foreground">
+          <div className="mb-2 truncate rounded-md px-3 py-1 text-xs text-muted-foreground">
             {user?.email}
           </div>
+          <a
+            href="mailto:luzoaisupport@gmail.com"
+            className="mb-2 block truncate rounded-md px-3 py-1 text-xs text-muted-foreground hover:text-foreground"
+            title="Contact support"
+          >
+            Support: luzoaisupport@gmail.com
+          </a>
           <Button onClick={signOut} variant="ghost" size="sm" className="w-full justify-start gap-2">
             <LogOut className="h-4 w-4" /> Sign out
           </Button>

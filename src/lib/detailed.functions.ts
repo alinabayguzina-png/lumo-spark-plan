@@ -199,34 +199,30 @@ async function loadContext(
 }
 
 async function callAi(system: string, prompt: string) {
-  const apiKey = process.env.LOVABLE_API_KEY;
-  if (!apiKey) throw new Error("AI is not configured for this project.");
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) throw new Error("AI is not configured. Set GEMINI_API_KEY.");
 
-  const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
+  const res = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: system }] },
+        contents: [{ role: "user", parts: [{ text: prompt }] }],
+        generationConfig: { responseMimeType: "application/json" },
+      }),
     },
-    body: JSON.stringify({
-      model: "google/gemini-2.5-flash",
-      messages: [
-        { role: "system", content: system },
-        { role: "user", content: prompt },
-      ],
-      response_format: { type: "json_object" },
-    }),
-  });
+  );
 
   if (res.status === 429) throw new Error("You're going too fast — try again in a minute.");
-  if (res.status === 402) throw new Error("AI credits exhausted for this workspace. Add credits to continue.");
   if (!res.ok) {
     const t = await res.text();
     throw new Error(`AI request failed: ${res.status} ${t.slice(0, 200)}`);
   }
 
   const json = await res.json();
-  const raw = json.choices?.[0]?.message?.content ?? "";
+  const raw = json.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
   try {
     return JSON.parse(raw);
   } catch {
@@ -258,10 +254,10 @@ async function assertDetailedQuota(
 
   if ((count ?? 0) >= limit) {
     if (tier === "free") {
-      throw new Error("Execution plans are a Pro feature. Upgrade to Pro for 15/month, or VIP for unlimited.");
+      throw new Error("Free plan includes 1 Execution Plan. Upgrade to Pro for 15/month or VIP for unlimited.");
     }
     if (tier === "pro") {
-      throw new Error("Pro plan is limited to 15 execution plans. Upgrade to VIP for unlimited.");
+      throw new Error("Pro plan is limited to 15 Execution Plans. Upgrade to VIP for unlimited.");
     }
   }
   return tier;

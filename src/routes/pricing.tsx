@@ -22,7 +22,8 @@ const PLANS = [
     tag: "Try Luzo",
     desc: "For solo creators just getting started.",
     features: [
-      "1 monthly content plan",
+      "1 Monthly Content Plan",
+      "1 Execution Plan",
       "Basic hooks + captions",
       "Post history",
     ],
@@ -35,8 +36,8 @@ const PLANS = [
     tag: "Most popular",
     desc: "For founders posting weekly across platforms.",
     features: [
-      "Unlimited monthly plans",
-      "15 execution plans / month",
+      "Unlimited Monthly Content Plans",
+      "15 Execution Plans / month",
       "Scene-by-scene video breakdowns",
       "Slide-by-slide carousel plans",
       "Priority AI generation",
@@ -50,8 +51,8 @@ const PLANS = [
     tag: "For power users",
     desc: "For creators serious about going viral.",
     features: [
-      "Unlimited monthly plans",
-      "Unlimited execution plans",
+      "Unlimited Monthly Content Plans",
+      "Unlimited Execution Plans",
       "Edit & regenerate any post",
       "Advanced viral tactics + retention loops",
       "First access to new features",
@@ -126,6 +127,12 @@ function Pricing() {
           </div>
           <p className="mt-10 text-center text-xs text-muted-foreground">
             Prices shown are for illustration. Billing is not enabled yet in this preview.
+          </p>
+          <p className="mt-4 text-center text-sm text-muted-foreground">
+            Need help? Contact our support team:{" "}
+            <a href="mailto:luzoaisupport@gmail.com" className="text-primary hover:underline">
+              luzoaisupport@gmail.com
+            </a>
           </p>
         </div>
       </section>
