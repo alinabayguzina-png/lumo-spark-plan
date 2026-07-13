@@ -180,7 +180,6 @@ function PostDetailPage() {
   const detailedUsed = usageQ.data?.detailedUsed ?? 0;
   const outOfQuota =
     detailedLimit !== null && detailedUsed >= detailedLimit && !detailed;
-  const freeBlocked = false;
 
   return (
     <div className="space-y-8">
