@@ -180,7 +180,6 @@ function PostDetailPage() {
   const detailedUsed = usageQ.data?.detailedUsed ?? 0;
   const outOfQuota =
     detailedLimit !== null && detailedUsed >= detailedLimit && !detailed;
-  const freeBlocked = tier === "free" && !detailed;
 
   return (
     <div className="space-y-8">
@@ -257,15 +256,18 @@ function PostDetailPage() {
           </div>
         </div>
 
-        {freeBlocked ? (
+        {outOfQuota ? (
           <UpgradeLock
-            title="Execution plans are a Pro feature"
-            description="Upgrade to Pro for 15 execution plans a month, or VIP for unlimited plus editing & regeneration."
-          />
-        ) : outOfQuota ? (
-          <UpgradeLock
-            title="You've hit the Pro limit (15)"
-            description="Upgrade to VIP for unlimited execution plans + editing + regeneration."
+            title={
+              tier === "free"
+                ? "You've used your free Execution Plan"
+                : "You've hit the Pro limit (15 Execution Plans)"
+            }
+            description={
+              tier === "free"
+                ? "Upgrade to Pro for 15 Execution Plans a month, or VIP for unlimited + editing & regeneration."
+                : "Upgrade to VIP for unlimited Execution Plans + editing + regeneration."
+            }
           />
         ) : (
           <Button type="submit" disabled={busy} size="lg" className="w-full sm:w-auto">
@@ -276,7 +278,7 @@ function PostDetailPage() {
             ) : (
               <>
                 <Sparkles className="mr-2 h-4 w-4" />
-                {detailed ? "Regenerate execution plan" : "Generate execution plan"}
+                {detailed ? "Regenerate Execution Plan" : "Generate Execution Plan"}
               </>
             )}
           </Button>

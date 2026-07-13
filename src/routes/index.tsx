@@ -161,9 +161,12 @@ function Index() {
       <footer className="border-t border-border/60 py-10">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 text-sm text-muted-foreground sm:flex-row sm:px-6">
           <span>© {new Date().getFullYear()} Luzo AI. Built for creators.</span>
-          <div className="flex items-center gap-6">
+          <div className="flex flex-wrap items-center gap-6">
             <Link to="/pricing" className="hover:text-foreground">Pricing</Link>
             <a href="/#faq" className="hover:text-foreground">FAQ</a>
+            <a href="mailto:luzoaisupport@gmail.com" className="hover:text-foreground">
+              Support: luzoaisupport@gmail.com
+            </a>
           </div>
         </div>
       </footer>

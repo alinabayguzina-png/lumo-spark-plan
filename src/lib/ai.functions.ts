@@ -105,34 +105,39 @@ export const generateContentPlan = createServerFn({ method: "POST" })
     if (bizErr) throw new Error(bizErr.message);
     if (!biz) throw new Error("Add your business info before generating a plan.");
 
-    const apiKey = process.env.LOVABLE_API_KEY;
-    if (!apiKey) throw new Error("AI is not configured for this project.");
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) throw new Error("AI is not configured. Set GEMINI_API_KEY.");
 
-    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: SYSTEM }] },
+          contents: [
+            {
+              role: "user",
+              parts: [
+                {
+                  text: buildPrompt(biz, data.month, data.postsPerWeek, data.extraNotes),
+                },
+              ],
+            },
+          ],
+          generationConfig: { responseMimeType: "application/json" },
+        }),
       },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [
-          { role: "system", content: SYSTEM },
-          { role: "user", content: buildPrompt(biz, data.month, data.postsPerWeek, data.extraNotes) },
-        ],
-        response_format: { type: "json_object" },
-      }),
-    });
+    );
 
     if (res.status === 429) throw new Error("You're going too fast — try again in a minute.");
-    if (res.status === 402) throw new Error("AI credits exhausted for this workspace. Add credits to continue.");
     if (!res.ok) {
       const t = await res.text();
       throw new Error(`AI request failed: ${res.status} ${t.slice(0, 200)}`);
     }
 
     const json = await res.json();
-    const raw = json.choices?.[0]?.message?.content ?? "";
+    const raw = json.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
     let parsed: unknown;
     try {
       parsed = JSON.parse(raw);
