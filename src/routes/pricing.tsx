@@ -47,7 +47,7 @@ const PLANS = [
   },
   {
     name: "VIP",
-    price: "$19",
+    price: "$15",
     tag: "For power users",
     desc: "For creators serious about going viral.",
     features: [
