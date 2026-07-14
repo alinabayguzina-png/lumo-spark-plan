@@ -215,7 +215,10 @@ async function callAi(system: string, prompt: string) {
     },
   );
 
-  if (res.status === 429) throw new Error("You're going too fast — try again in a minute.");
+  if (res.status === 429) {
+    const errorText = await res.text();
+    throw new Error(`Gemini API 429: ${errorText}`);
+  }
   if (!res.ok) {
     const t = await res.text();
     throw new Error(`AI request failed: ${res.status} ${t.slice(0, 200)}`);
