@@ -70,6 +70,61 @@ Respond with a JSON object of the exact shape:
 Return ONLY the JSON. No markdown fences, no commentary.`;
 }
 
+const PRIMARY_MODEL = "gemini-3.5-flash";
+const FALLBACK_MODEL = "gemini-3.1-flash-lite";
+
+function isUnavailableError(status: number, text: string) {
+  if (status === 503) return true;
+  const lower = text.toLowerCase();
+  return (
+    lower.includes("unavailable") ||
+    lower.includes("high demand") ||
+    lower.includes("temporarily overloaded") ||
+    lower.includes("overloaded") ||
+    lower.includes("capacity")
+  );
+}
+
+async function callGemini(system: string, prompt: string) {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) throw new Error("AI is not configured. Set GEMINI_API_KEY.");
+
+  async function tryModel(model: string, allowFallback: boolean) {
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: system }] },
+          contents: [{ role: "user", parts: [{ text: prompt }] }],
+          generationConfig: { responseMimeType: "application/json" },
+        }),
+      },
+    );
+
+    if (res.status === 429) {
+      const errorText = await res.text();
+      throw new Error(`Gemini API 429: ${errorText}`);
+    }
+    if (!res.ok) {
+      const t = await res.text();
+      if (allowFallback && isUnavailableError(res.status, t)) {
+        return null;
+      }
+      throw new Error(`AI request failed: ${res.status} ${t.slice(0, 200)}`);
+    }
+
+    return res.json();
+  }
+
+  const primary = await tryModel(PRIMARY_MODEL, true);
+  if (primary) return primary;
+
+  const fallback = await tryModel(FALLBACK_MODEL, false);
+  return fallback;
+}
+
 export const generateContentPlan = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => GenerateInput.parse(input))
@@ -105,41 +160,10 @@ export const generateContentPlan = createServerFn({ method: "POST" })
     if (bizErr) throw new Error(bizErr.message);
     if (!biz) throw new Error("Add your business info before generating a plan.");
 
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) throw new Error("AI is not configured. Set GEMINI_API_KEY.");
-
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          systemInstruction: { parts: [{ text: SYSTEM }] },
-          contents: [
-            {
-              role: "user",
-              parts: [
-                {
-                  text: buildPrompt(biz, data.month, data.postsPerWeek, data.extraNotes),
-                },
-              ],
-            },
-          ],
-          generationConfig: { responseMimeType: "application/json" },
-        }),
-      },
+    const json = await callGemini(
+      SYSTEM,
+      buildPrompt(biz, data.month, data.postsPerWeek, data.extraNotes),
     );
-
-    if (res.status === 429) {
-      const errorText = await res.text();
-      throw new Error(`Gemini API 429: ${errorText}`);
-    }
-    if (!res.ok) {
-      const t = await res.text();
-      throw new Error(`AI request failed: ${res.status} ${t.slice(0, 200)}`);
-    }
-
-    const json = await res.json();
     const raw = json.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
     let parsed: unknown;
     try {
