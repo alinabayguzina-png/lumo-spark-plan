@@ -198,41 +198,66 @@ async function loadContext(
   return { plan, post, brand };
 }
 
+const PRIMARY_MODEL = "gemini-3.5-flash";
+const FALLBACK_MODEL = "gemini-3.1-flash-lite";
+
+function isUnavailableError(status: number, text: string) {
+  if (status === 503) return true;
+  const lower = text.toLowerCase();
+  return (
+    lower.includes("unavailable") ||
+    lower.includes("high demand") ||
+    lower.includes("temporarily overloaded") ||
+    lower.includes("overloaded") ||
+    lower.includes("capacity")
+  );
+}
+
 async function callAi(system: string, prompt: string) {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) throw new Error("AI is not configured. Set GEMINI_API_KEY.");
 
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: system }] },
-        contents: [{ role: "user", parts: [{ text: prompt }] }],
-        generationConfig: { responseMimeType: "application/json" },
-      }),
-    },
-  );
+  async function tryModel(model: string, allowFallback: boolean) {
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: system }] },
+          contents: [{ role: "user", parts: [{ text: prompt }] }],
+          generationConfig: { responseMimeType: "application/json" },
+        }),
+      },
+    );
 
-  if (res.status === 429) {
-    const errorText = await res.text();
-    throw new Error(`Gemini API 429: ${errorText}`);
-  }
-  if (!res.ok) {
-    const t = await res.text();
-    throw new Error(`AI request failed: ${res.status} ${t.slice(0, 200)}`);
+    if (res.status === 429) {
+      const errorText = await res.text();
+      throw new Error(`Gemini API 429: ${errorText}`);
+    }
+    if (!res.ok) {
+      const t = await res.text();
+      if (allowFallback && isUnavailableError(res.status, t)) {
+        return null;
+      }
+      throw new Error(`AI request failed: ${res.status} ${t.slice(0, 200)}`);
+    }
+
+    const json = await res.json();
+    const raw = json.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+    try {
+      return JSON.parse(raw);
+    } catch {
+      const m = raw.match(/\{[\s\S]*\}/);
+      if (!m) throw new Error("AI returned an unreadable response. Try again.");
+      return JSON.parse(m[0]);
+    }
   }
 
-  const json = await res.json();
-  const raw = json.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
-  try {
-    return JSON.parse(raw);
-  } catch {
-    const m = raw.match(/\{[\s\S]*\}/);
-    if (!m) throw new Error("AI returned an unreadable response. Try again.");
-    return JSON.parse(m[0]);
-  }
+  const primary = await tryModel(PRIMARY_MODEL, true);
+  if (primary) return primary;
+
+  return tryModel(FALLBACK_MODEL, false);
 }
 
 async function assertDetailedQuota(
