@@ -2,48 +2,128 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getMyBusiness } from "@/lib/business.functions";
-import { generateContentPlan } from "@/lib/ai.functions";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
 import { Sparkles, Loader2 } from "lucide-react";
 import { useUsage } from "@/components/usage-badge";
 import { MONTHLY_PLAN_LIMIT, monthlyRemainingLabel, detailedRemainingLabel } from "@/lib/plan-limits";
 import { UpgradeLock } from "@/components/upgrade-lock";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/generate")({
   head: () => ({ meta: [{ title: "Generate plan — Luzo AI" }] }),
   component: GeneratePage,
 });
 
-function currentMonthLabel() {
-  return new Date().toLocaleDateString(undefined, { month: "long", year: "numeric" });
-}
+const MAX_POSTS_PER_WEEK = 14;
 
 function GeneratePage() {
   const bizFn = useServerFn(getMyBusiness);
-  const genFn = useServerFn(generateContentPlan);
   const qc = useQueryClient();
   const nav = useNavigate();
   const { data: biz, isLoading } = useQuery({ queryKey: ["business"], queryFn: () => bizFn() });
   const usage = useUsage();
 
-  const [month, setMonth] = useState(currentMonthLabel());
+  const [month, setMonth] = useState("");
   const [postsPerWeek, setPostsPerWeek] = useState(4);
   const [notes, setNotes] = useState("");
   const [busy, setBusy] = useState(false);
+  const [liveText, setLiveText] = useState("");
+  const liveRef = useRef<HTMLPreElement | null>(null);
+
+  useEffect(() => {
+    if (liveRef.current) {
+      liveRef.current.scrollTop = liveRef.current.scrollHeight;
+    }
+  }, [liveText]);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (!month.trim()) {
+      toast.error("Give your plan a name first.");
+      return;
+    }
     setBusy(true);
+    setLiveText("");
     try {
-      const res = await genFn({ data: { month, postsPerWeek, extraNotes: notes || undefined } });
+      const { data: sessionData } = await supabase.auth.getSession();
+      const accessToken = sessionData.session?.access_token;
+      if (!accessToken) throw new Error("You need to sign in again.");
+
+      const res = await fetch("/api/public/generate-plan-stream", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({
+          month: month.trim(),
+          postsPerWeek,
+          extraNotes: notes || undefined,
+        }),
+      });
+
+      if (!res.ok || !res.body) {
+        const errText = await res.text();
+        throw new Error(errText || `Generation failed (${res.status}).`);
+      }
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      let planId: string | null = null;
+      let errorMessage: string | null = null;
+
+      // eslint-disable-next-line no-constant-condition
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        let idx;
+        while ((idx = buffer.indexOf("\n\n")) !== -1) {
+          const frame = buffer.slice(0, idx);
+          buffer = buffer.slice(idx + 2);
+          for (const line of frame.split("\n")) {
+            if (!line.startsWith("data:")) continue;
+            const payload = line.slice(5).trim();
+            if (!payload) continue;
+            try {
+              const msg = JSON.parse(payload) as
+                | { type: "start" }
+                | { type: "chunk"; text: string }
+                | { type: "done"; planId: string }
+                | { type: "error"; message: string };
+              if (msg.type === "chunk") {
+                setLiveText((prev) => prev + msg.text);
+              } else if (msg.type === "done") {
+                planId = msg.planId;
+              } else if (msg.type === "error") {
+                errorMessage = msg.message;
+              }
+            } catch {
+              /* ignore */
+            }
+          }
+        }
+      }
+
+      if (errorMessage) throw new Error(errorMessage);
+      if (!planId) throw new Error("Generation ended without a plan.");
+
       qc.invalidateQueries({ queryKey: ["plans"] });
       toast.success("Your plan is ready.");
-      nav({ to: "/plan/$id", params: { id: res.id } });
+      nav({ to: "/plan/$id", params: { id: planId } });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Generation failed.");
     } finally {
@@ -101,23 +181,32 @@ function GeneratePage() {
       <form onSubmit={submit} className="space-y-6 rounded-2xl border border-border bg-card p-8">
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
-            <Label>Month</Label>
+            <Label>Name</Label>
             <Input
               value={month}
               onChange={(e) => setMonth(e.target.value)}
-              maxLength={40}
+              maxLength={80}
+              placeholder="e.g. Summer launch"
               required
             />
           </div>
           <div className="space-y-1.5">
             <Label>Posts per week</Label>
-            <Input
-              type="number"
-              min={1}
-              max={21}
-              value={postsPerWeek}
-              onChange={(e) => setPostsPerWeek(Number(e.target.value))}
-            />
+            <Select
+              value={String(postsPerWeek)}
+              onValueChange={(v) => setPostsPerWeek(Number(v))}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {Array.from({ length: MAX_POSTS_PER_WEEK }, (_, i) => i + 1).map((n) => (
+                  <SelectItem key={n} value={String(n)}>
+                    {n} {n === 1 ? "post" : "posts"} / week
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
@@ -146,6 +235,23 @@ function GeneratePage() {
         <p className="text-center text-xs text-muted-foreground">
           Usually takes 20–40 seconds.
         </p>
+
+        {(busy || liveText) && (
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                Live generation
+              </Label>
+              {busy && <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" />}
+            </div>
+            <pre
+              ref={liveRef}
+              className="max-h-72 overflow-auto whitespace-pre-wrap break-words rounded-xl border border-border bg-secondary/30 p-4 text-xs text-muted-foreground"
+            >
+              {liveText || "Waiting for Luzo to start writing…"}
+            </pre>
+          </div>
+        )}
       </form>
     </div>
   );

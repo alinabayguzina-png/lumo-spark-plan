@@ -19,6 +19,7 @@ import { Route as AuthenticatedHistoryRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedGenerateRouteImport } from './routes/_authenticated/generate'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedBusinessRouteImport } from './routes/_authenticated/business'
+import { Route as ApiPublicGeneratePlanStreamRouteImport } from './routes/api/public/generate-plan-stream'
 import { Route as AuthenticatedPlanIdRouteImport } from './routes/_authenticated/plan.$id'
 import { Route as AuthenticatedPlanIdPostIndexRouteImport } from './routes/_authenticated/plan_.$id.post.$index'
 
@@ -71,6 +72,12 @@ const AuthenticatedBusinessRoute = AuthenticatedBusinessRouteImport.update({
   path: '/business',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiPublicGeneratePlanStreamRoute =
+  ApiPublicGeneratePlanStreamRouteImport.update({
+    id: '/api/public/generate-plan-stream',
+    path: '/api/public/generate-plan-stream',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedPlanIdRoute = AuthenticatedPlanIdRouteImport.update({
   id: '/plan/$id',
   path: '/plan/$id',
@@ -94,6 +101,7 @@ export interface FileRoutesByFullPath {
   '/generate': typeof AuthenticatedGenerateRoute
   '/history': typeof AuthenticatedHistoryRoute
   '/plan/$id': typeof AuthenticatedPlanIdRoute
+  '/api/public/generate-plan-stream': typeof ApiPublicGeneratePlanStreamRoute
   '/plan/$id/post/$index': typeof AuthenticatedPlanIdPostIndexRoute
 }
 export interface FileRoutesByTo {
@@ -107,6 +115,7 @@ export interface FileRoutesByTo {
   '/generate': typeof AuthenticatedGenerateRoute
   '/history': typeof AuthenticatedHistoryRoute
   '/plan/$id': typeof AuthenticatedPlanIdRoute
+  '/api/public/generate-plan-stream': typeof ApiPublicGeneratePlanStreamRoute
   '/plan/$id/post/$index': typeof AuthenticatedPlanIdPostIndexRoute
 }
 export interface FileRoutesById {
@@ -122,6 +131,7 @@ export interface FileRoutesById {
   '/_authenticated/generate': typeof AuthenticatedGenerateRoute
   '/_authenticated/history': typeof AuthenticatedHistoryRoute
   '/_authenticated/plan/$id': typeof AuthenticatedPlanIdRoute
+  '/api/public/generate-plan-stream': typeof ApiPublicGeneratePlanStreamRoute
   '/_authenticated/plan_/$id/post/$index': typeof AuthenticatedPlanIdPostIndexRoute
 }
 export interface FileRouteTypes {
@@ -137,6 +147,7 @@ export interface FileRouteTypes {
     | '/generate'
     | '/history'
     | '/plan/$id'
+    | '/api/public/generate-plan-stream'
     | '/plan/$id/post/$index'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -150,6 +161,7 @@ export interface FileRouteTypes {
     | '/generate'
     | '/history'
     | '/plan/$id'
+    | '/api/public/generate-plan-stream'
     | '/plan/$id/post/$index'
   id:
     | '__root__'
@@ -164,6 +176,7 @@ export interface FileRouteTypes {
     | '/_authenticated/generate'
     | '/_authenticated/history'
     | '/_authenticated/plan/$id'
+    | '/api/public/generate-plan-stream'
     | '/_authenticated/plan_/$id/post/$index'
   fileRoutesById: FileRoutesById
 }
@@ -174,6 +187,7 @@ export interface RootRouteChildren {
   PricingRoute: typeof PricingRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  ApiPublicGeneratePlanStreamRoute: typeof ApiPublicGeneratePlanStreamRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -248,6 +262,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBusinessRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/generate-plan-stream': {
+      id: '/api/public/generate-plan-stream'
+      path: '/api/public/generate-plan-stream'
+      fullPath: '/api/public/generate-plan-stream'
+      preLoaderRoute: typeof ApiPublicGeneratePlanStreamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/plan/$id': {
       id: '/_authenticated/plan/$id'
       path: '/plan/$id'
@@ -293,17 +314,8 @@ const rootRouteChildren: RootRouteChildren = {
   PricingRoute: PricingRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  ApiPublicGeneratePlanStreamRoute: ApiPublicGeneratePlanStreamRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
