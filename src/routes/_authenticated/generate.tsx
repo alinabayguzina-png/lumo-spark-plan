@@ -26,7 +26,7 @@ export const Route = createFileRoute("/_authenticated/generate")({
   component: GeneratePage,
 });
 
-const MAX_POSTS_PER_WEEK = 14;
+const MAX_POSTS_PER_WEEK = 7;
 
 function GeneratePage() {
   const bizFn = useServerFn(getMyBusiness);
