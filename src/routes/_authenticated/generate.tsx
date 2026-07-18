@@ -2,7 +2,8 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getMyBusiness } from "@/lib/business.functions";
-import { useEffect, useRef, useState } from "react";
+import { generateContentPlan } from "@/lib/ai.functions";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,7 +20,7 @@ import { Sparkles, Loader2 } from "lucide-react";
 import { useUsage } from "@/components/usage-badge";
 import { MONTHLY_PLAN_LIMIT, monthlyRemainingLabel, detailedRemainingLabel } from "@/lib/plan-limits";
 import { UpgradeLock } from "@/components/upgrade-lock";
-import { supabase } from "@/integrations/supabase/client";
+import { Progress } from "@/components/ui/progress";
 
 export const Route = createFileRoute("/_authenticated/generate")({
   head: () => ({ meta: [{ title: "Generate plan — Luzo AI" }] }),
@@ -28,8 +29,28 @@ export const Route = createFileRoute("/_authenticated/generate")({
 
 const MAX_POSTS_PER_WEEK = 7;
 
+const PROGRESS_STAGES = [
+  { at: 8, label: "Analyzing brand…" },
+  { at: 28, label: "Researching hooks & formats…" },
+  { at: 50, label: "Creating content ideas…" },
+  { at: 72, label: "Writing captions & concepts…" },
+  { at: 90, label: "Finalizing plan…" },
+];
+
+function stageForProgress(p: number) {
+  let label = PROGRESS_STAGES[PROGRESS_STAGES.length - 1].label;
+  for (const s of PROGRESS_STAGES) {
+    if (p < s.at) {
+      label = s.label;
+      break;
+    }
+  }
+  return label;
+}
+
 function GeneratePage() {
   const bizFn = useServerFn(getMyBusiness);
+  const generateFn = useServerFn(generateContentPlan);
   const qc = useQueryClient();
   const nav = useNavigate();
   const { data: biz, isLoading } = useQuery({ queryKey: ["business"], queryFn: () => bizFn() });
@@ -39,14 +60,17 @@ function GeneratePage() {
   const [postsPerWeek, setPostsPerWeek] = useState(4);
   const [notes, setNotes] = useState("");
   const [busy, setBusy] = useState(false);
-  const [liveText, setLiveText] = useState("");
-  const liveRef = useRef<HTMLPreElement | null>(null);
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    if (liveRef.current) {
-      liveRef.current.scrollTop = liveRef.current.scrollHeight;
-    }
-  }, [liveText]);
+    if (!busy) return;
+    let p = 0;
+    const interval = setInterval(() => {
+      p = Math.min(p + Math.random() * 7 + 2, 95);
+      setProgress(p);
+    }, 600);
+    return () => clearInterval(interval);
+  }, [busy]);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -55,79 +79,25 @@ function GeneratePage() {
       return;
     }
     setBusy(true);
-    setLiveText("");
+    setProgress(2);
     try {
-      const { data: sessionData } = await supabase.auth.getSession();
-      const accessToken = sessionData.session?.access_token;
-      if (!accessToken) throw new Error("You need to sign in again.");
-
-      const res = await fetch("/api/public/generate-plan-stream", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify({
+      const result = await generateFn({
+        data: {
           month: month.trim(),
           postsPerWeek,
           extraNotes: notes || undefined,
-        }),
+        },
       });
-
-      if (!res.ok || !res.body) {
-        const errText = await res.text();
-        throw new Error(errText || `Generation failed (${res.status}).`);
-      }
-
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-      let buffer = "";
-      let planId: string | null = null;
-      let errorMessage: string | null = null;
-
-      // eslint-disable-next-line no-constant-condition
-      while (true) {
-        const { value, done } = await reader.read();
-        if (done) break;
-        buffer += decoder.decode(value, { stream: true });
-        let idx;
-        while ((idx = buffer.indexOf("\n\n")) !== -1) {
-          const frame = buffer.slice(0, idx);
-          buffer = buffer.slice(idx + 2);
-          for (const line of frame.split("\n")) {
-            if (!line.startsWith("data:")) continue;
-            const payload = line.slice(5).trim();
-            if (!payload) continue;
-            try {
-              const msg = JSON.parse(payload) as
-                | { type: "start" }
-                | { type: "chunk"; text: string }
-                | { type: "done"; planId: string }
-                | { type: "error"; message: string };
-              if (msg.type === "chunk") {
-                setLiveText((prev) => prev + msg.text);
-              } else if (msg.type === "done") {
-                planId = msg.planId;
-              } else if (msg.type === "error") {
-                errorMessage = msg.message;
-              }
-            } catch {
-              /* ignore */
-            }
-          }
-        }
-      }
-
-      if (errorMessage) throw new Error(errorMessage);
-      if (!planId) throw new Error("Generation ended without a plan.");
-
+      setProgress(100);
       qc.invalidateQueries({ queryKey: ["plans"] });
+      qc.invalidateQueries({ queryKey: ["usage"] });
       toast.success("Your plan is ready.");
-      nav({ to: "/plan/$id", params: { id: planId } });
+      nav({ to: "/plan/$id", params: { id: result.id } });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Generation failed.");
     } finally {
       setBusy(false);
+      setProgress(0);
     }
   }
 
@@ -236,20 +206,18 @@ function GeneratePage() {
           Usually takes 20–40 seconds.
         </p>
 
-        {(busy || liveText) && (
-          <div className="space-y-2">
+        {busy && (
+          <div className="space-y-3 rounded-xl border border-border bg-secondary/30 p-4">
             <div className="flex items-center justify-between">
               <Label className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
-                Live generation
+                {stageForProgress(progress)}
               </Label>
-              {busy && <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" />}
+              <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" />
             </div>
-            <pre
-              ref={liveRef}
-              className="max-h-72 overflow-auto whitespace-pre-wrap break-words rounded-xl border border-border bg-secondary/30 p-4 text-xs text-muted-foreground"
-            >
-              {liveText || "Waiting for Luzo to start writing…"}
-            </pre>
+            <Progress value={progress} />
+            <div className="text-right text-xs text-muted-foreground">
+              {Math.round(progress)}%
+            </div>
           </div>
         )}
       </form>
