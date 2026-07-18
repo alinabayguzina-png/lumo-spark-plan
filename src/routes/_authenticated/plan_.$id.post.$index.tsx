@@ -269,7 +269,7 @@ function PostDetailPage() {
                 : "Upgrade to VIP for unlimited Execution Plans + editing + regeneration."
             }
           />
-        ) : (
+        ) : detailed && !canEditDetailed(tier) ? null : (
           <Button type="submit" disabled={busy} size="lg" className="w-full sm:w-auto">
             {busy ? (
               <>
