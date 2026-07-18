@@ -20,6 +20,23 @@ export const DETAILED_LIMIT: Record<PlanTier, number | null> = {
   vip: null,
 };
 
+// Hidden fair-use caps for paid plans. NOT surfaced in the UI.
+// When exceeded, the server returns a generic transient error.
+export const HIDDEN_MONTHLY_CAP: Record<PlanTier, number | null> = {
+  free: null,
+  pro: 40,
+  vip: 60,
+};
+
+export const HIDDEN_DETAILED_CAP: Record<PlanTier, number | null> = {
+  free: null,
+  pro: null,
+  vip: 40,
+};
+
+export const GENERIC_LIMIT_ERROR =
+  "Generation is temporarily unavailable. Please try again in a few minutes.";
+
 export function canEditDetailed(tier: PlanTier) {
   return tier === "vip";
 }

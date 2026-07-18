@@ -1,7 +1,13 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
-import { DETAILED_LIMIT, canEditDetailed, normalizeTier } from "./plan-limits";
+import {
+  DETAILED_LIMIT,
+  HIDDEN_DETAILED_CAP,
+  GENERIC_LIMIT_ERROR,
+  canEditDetailed,
+  normalizeTier,
+} from "./plan-limits";
 
 export type DetailedKind = "video" | "slides" | "post";
 
@@ -52,39 +58,39 @@ User preferences: ${prefs ?? "none"}
 Target length: ~${length} seconds.
 
 Requirements:
-- Break the video into 3–5 scenes covering the full duration. Timestamps must be non-overlapping and cover 0s to ~${length}s.
-- The first scene is a scroll-stopping hook (first 1.5s). Include a brief "why it works" note.
-- End with a payoff + a natural CTA.
-- Keep each scene SHORT and skimmable: one sentence per field. No paragraphs.
-- Add a caption, 5–8 hashtags, viral tips and a posting tip.
+- Use EXACTLY 3 to 4 scenes total. Never more than 4. Cover the full duration.
+- If the video is long, combine related beats into one scene with a concise general description — do NOT create many small scenes.
+- Scene 1 is the hook (first ~1.5s). End with a payoff + CTA.
+- Every field is one short line. No paragraphs, no filler.
+- Timestamps non-overlapping, covering 0s to ~${length}s.
 
 Respond with a JSON object of the exact shape:
 {
   "kind": "video",
-  "summary": "one-line pitch of the finished video",
+  "summary": "one-line pitch",
   "totalDurationSec": ${length},
-  "hookAnalysis": "one short sentence — why the opening stops the scroll",
+  "hookAnalysis": "one short sentence — why the hook works",
   "scenes": [
     {
       "range": "0–2 sec",
       "startSec": 0,
       "endSec": 2,
-      "script": "exact words to say — one short line",
-      "onScreenText": "text on screen — a few words",
+      "script": "one short line — words to say",
+      "onScreenText": "a few words",
       "visual": "one line: what the viewer sees",
       "cameraShot": "e.g. handheld close-up",
-      "editingMove": "e.g. hard cut, zoom punch, whip pan",
-      "retentionTip": "one short line — why it keeps them watching"
+      "editingMove": "e.g. hard cut",
+      "retentionTip": "one short line"
     }
   ],
   "musicDirection": "one line: vibe + tempo",
   "editingStyle": "one line: pacing + transitions",
-  "caption": "final caption — 1–3 short lines",
+  "caption": "short caption — 1–2 lines",
   "hashtags": ["#a", "#b"],
-  "cta": "final call to action",
-  "viralTips": ["tip 1", "tip 2", "tip 3", "tip 4", "tip 5"],
-  "retentionTactics": ["curiosity gap", "reveal", "loop", "pattern interrupt"],
-  "postingTip": "best posting time + first-comment strategy — one line"
+  "cta": "one call to action",
+  "viralTips": ["tip 1", "tip 2", "tip 3"],
+  "retentionTactics": ["curiosity gap", "reveal", "loop"],
+  "postingTip": "one line: best time + first-comment strategy"
 }
 
 Return ONLY the JSON. No markdown fences.`;
@@ -104,11 +110,8 @@ User preferences: ${prefs ?? "none"}
 Total slides: exactly ${count}.
 
 Requirements:
-- Slide 1 is the cover hook. Include a short "why it earns the tap" line.
-- Slides 2 → ${count - 1} deliver the payoff (problem → solution, or list-of-N, or before/after).
-- Slide ${count} is the CTA slide.
-- Keep each slide SHORT and skimmable: one sentence per field.
-- Return a final caption + viral tips.
+- Slide 1 cover hook. Slides 2 → ${count - 1} payoff. Slide ${count} CTA.
+- Every field one short line. No filler.
 
 Respond with a JSON object of the exact shape:
 {
@@ -120,15 +123,15 @@ Respond with a JSON object of the exact shape:
       "index": 1,
       "role": "cover | value | proof | cta",
       "photoDirection": "one line: what the photo shows",
-      "onSlideText": "exact text — keep it short",
+      "onSlideText": "short text",
       "layout": "one line: e.g. text-top, full-bleed photo",
       "colorMood": "one line: palette + vibe"
     }
   ],
-  "caption": "final caption — 1–3 short lines",
+  "caption": "short caption — 1–2 lines",
   "hashtags": ["#a", "#b"],
-  "cta": "final call to action",
-  "viralTips": ["tip 1", "tip 2", "tip 3", "tip 4"],
+  "cta": "one call to action",
+  "viralTips": ["tip 1", "tip 2", "tip 3"],
   "engagementHooks": ["comment-bait line", "save-bait line"]
 }
 
@@ -152,10 +155,10 @@ Respond with a JSON object of the exact shape:
   "summary": "one-line pitch",
   "hookAnalysis": "one short sentence — why the hook works",
   "visualDirection": "one line: what the image should look like",
-  "onScreenText": "text overlay if any — short",
-  "caption": "final caption — 1–3 short lines",
+  "onScreenText": "short text overlay if any",
+  "caption": "short caption — 1–2 lines",
   "hashtags": ["#a", "#b"],
-  "cta": "final call to action",
+  "cta": "one call to action",
   "viralTips": ["tip 1", "tip 2", "tip 3"],
   "postingTip": "one line: best posting time + first-comment strategy"
 }
@@ -272,15 +275,15 @@ async function assertDetailedQuota(
   if (profileErr) throw new Error(profileErr.message);
   const tier = normalizeTier(profile?.plan ?? "free");
   const limit = DETAILED_LIMIT[tier];
-  if (limit === null) return tier;
 
   const { count, error: cErr } = await sb
     .from("detailed_plans")
     .select("id", { count: "exact", head: true })
     .eq("user_id", userId);
   if (cErr) throw new Error(cErr.message);
+  const used = count ?? 0;
 
-  if ((count ?? 0) >= limit) {
+  if (limit !== null && used >= limit) {
     if (tier === "free") {
       throw new Error("Free plan includes 1 Execution Plan. Upgrade to Pro for 15/month or VIP for unlimited.");
     }
@@ -288,6 +291,13 @@ async function assertDetailedQuota(
       throw new Error("Pro plan is limited to 15 Execution Plans. Upgrade to VIP for unlimited.");
     }
   }
+
+  // Hidden fair-use cap (not surfaced in UI).
+  const hiddenCap = HIDDEN_DETAILED_CAP[tier];
+  if (hiddenCap !== null && used >= hiddenCap) {
+    throw new Error(GENERIC_LIMIT_ERROR);
+  }
+
   return tier;
 }
 

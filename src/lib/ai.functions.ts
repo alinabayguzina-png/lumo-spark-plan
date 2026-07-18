@@ -1,6 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
+import {
+  HIDDEN_MONTHLY_CAP,
+  GENERIC_LIMIT_ERROR,
+  normalizeTier,
+} from "./plan-limits";
 
 const GenerateInput = z.object({
   postsPerWeek: z.number().int().min(1).max(21).default(4),
@@ -41,15 +46,15 @@ ${extra ? `Extra notes: ${extra}` : ""}
 Requirements:
 - Generate exactly ${total} posts (about ${postsPerWeek} per week for 4 weeks).
 - Distribute across the active platforms above.
-- Bias toward Reels, TikToks, Shorts, carousels and photo posts that historically drive reach. Only use plain text posts on LinkedIn/X when it clearly fits.
-- Every post must include a scroll-stopping hook, a specific visual/video concept the brand can actually shoot, an on-brand caption, 5-10 relevant hashtags, and a clear call to action.
-- Vary content pillars across the month: education, entertainment, social proof, behind-the-scenes, product, community.
-- Assign each post a date in ${month} (YYYY-MM-DD) and a suggested posting time.
+- Bias toward Reels, TikToks, Shorts, carousels and photo posts that drive reach. Use plain text only on LinkedIn/X when it clearly fits.
+- Each post: one scroll-stopping hook, one short shootable concept, a tight caption, 5-8 hashtags, one CTA. Keep every field to one line. No filler.
+- Vary pillars: education, entertainment, social proof, behind-the-scenes, product, community.
+- Assign each post a date in ${month} (YYYY-MM-DD) and a posting time.
 
 Respond with a JSON object of the exact shape:
 {
   "theme": "one-line theme for the month",
-  "pillars": ["pillar 1", "pillar 2", "..."],
+  "pillars": ["pillar 1", "pillar 2"],
   "posts": [
     {
       "day": 1,
@@ -58,11 +63,11 @@ Respond with a JSON object of the exact shape:
       "platform": "Instagram|TikTok|LinkedIn|X|YouTube Shorts",
       "format": "Reel|Carousel|Photo|Story|Short|Text",
       "pillar": "education",
-      "hook": "the first 2 seconds — text on screen or opening line",
-      "concept": "step-by-step visual/video concept the creator can shoot",
-      "caption": "final caption",
+      "hook": "opening line — short",
+      "concept": "one line: what to shoot",
+      "caption": "short caption",
       "hashtags": ["#a", "#b"],
-      "cta": "explicit call to action"
+      "cta": "one call to action"
     }
   ]
 }
@@ -138,8 +143,8 @@ export const generateContentPlan = createServerFn({ method: "POST" })
       .maybeSingle();
     if (profileErr) throw new Error(profileErr.message);
 
-    const userPlan = profile?.plan ?? "free";
-    if (userPlan === "free") {
+    const tier = normalizeTier(profile?.plan ?? "free");
+    if (tier === "free") {
       const { count, error: countErr } = await sb
         .from("content_plans")
         .select("id", { count: "exact", head: true })
@@ -149,6 +154,18 @@ export const generateContentPlan = createServerFn({ method: "POST" })
         throw new Error(
           "Free plan is limited to 1 content plan. Upgrade to Pro for unlimited generations.",
         );
+      }
+    } else {
+      const cap = HIDDEN_MONTHLY_CAP[tier];
+      if (cap !== null) {
+        const { count, error: countErr } = await sb
+          .from("content_plans")
+          .select("id", { count: "exact", head: true })
+          .eq("user_id", userId);
+        if (countErr) throw new Error(countErr.message);
+        if ((count ?? 0) >= cap) {
+          throw new Error(GENERIC_LIMIT_ERROR);
+        }
       }
     }
 
