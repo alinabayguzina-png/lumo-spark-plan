@@ -2,7 +2,6 @@ import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router"
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,6 +10,7 @@ import { z } from "zod";
 import { Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/auth")({
+  validateSearch: z.object({ error: z.string().optional() }),
   head: () => ({
     meta: [
       { title: "Sign in — Luzo AI" },
@@ -32,12 +32,14 @@ function AuthPage() {
   const [forgotOpen, setForgotOpen] = useState(false);
   const navigate = useNavigate();
   const router = useRouter();
+  const search = Route.useSearch();
 
   useEffect(() => {
+    if (search.error) toast.error("Google sign-in failed. Please try again.");
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) navigate({ to: "/dashboard" });
     });
-  }, [navigate]);
+  }, [navigate, search.error]);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -79,12 +81,13 @@ function AuthPage() {
   async function google() {
     setBusy(true);
     try {
-      const result = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: window.location.origin,
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
       });
-      if (result.error) throw result.error;
-      if (result.redirected) return;
-      navigate({ to: "/dashboard" });
+      if (error) throw error;
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Google sign-in failed.");
     } finally {
