@@ -1,1 +1,2 @@
-project_id = "lqspajlrbodfifaoirwx"
+# Replace YOUR-PROJECT-REF with your own Supabase project reference ID.
+project_id = "YOUR-PROJECT-REF"
