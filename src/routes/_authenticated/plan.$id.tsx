@@ -13,6 +13,7 @@ export const Route = createFileRoute("/_authenticated/plan/$id")({
 });
 
 type PostItem = {
+  id?: string;
   day?: number;
   date?: string;
   time?: string;
@@ -73,15 +74,15 @@ function PlanPage() {
   }
 
   async function onToggleFav(index: number, post: PostItem) {
-    const key = `${id}:${index}`;
+    const postId = post.id ?? `post_${index + 1}`;
+    const key = `${id}:${postId}`;
     const wasFav = favSet.has(key);
     try {
       await toggleFavFn({
         data: {
-          planId: id,
-          postIndex: index,
-          postSnapshot: post as unknown as Record<string, unknown>,
-          planTitle: data.title,
+          contentPlanId: id,
+          postId,
+          postData: { ...post, _index: index } as unknown as Record<string, unknown>,
         },
       });
       qc.invalidateQueries({ queryKey: ["favorite-keys"] });
@@ -123,7 +124,8 @@ function PlanPage() {
 
       <div className="grid gap-4">
         {items.map((p, i) => {
-          const favKey = `${id}:${i}`;
+          const postId = p.id ?? `post_${i + 1}`;
+          const favKey = `${id}:${postId}`;
           const isFav = favSet.has(favKey);
           return (
             <article

@@ -57,6 +57,7 @@ Respond with a JSON object of the exact shape:
   "pillars": ["pillar 1", "pillar 2"],
   "posts": [
     {
+      "id": "post_1",
       "day": 1,
       "date": "YYYY-MM-DD",
       "time": "18:00",
@@ -198,6 +199,13 @@ export const generateContentPlan = createServerFn({ method: "POST" })
     };
 
     const posts = Array.isArray(plan.posts) ? plan.posts : [];
+
+    // Ensure every post has a unique id. If the AI omits it, assign one based on index.
+    posts.forEach((p, i) => {
+      if (!p || typeof p !== "object" || !(p as Record<string, unknown>).id) {
+        (p as Record<string, unknown>).id = `post_${i + 1}`;
+      }
+    });
 
     const title = `${biz.business_name} — ${data.month}`;
     const { data: saved, error: saveErr } = await sb

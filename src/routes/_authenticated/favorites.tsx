@@ -40,13 +40,13 @@ function FavoritesPage() {
   const qc = useQueryClient();
   const { data } = useQuery({ queryKey: ["favorites"], queryFn: () => listFn() });
 
-  async function remove(planId: string, postIndex: number) {
+  async function remove(contentPlanId: string, postId: string) {
     try {
       await toggleFn({
         data: {
-          planId,
-          postIndex,
-          postSnapshot: {},
+          contentPlanId,
+          postId,
+          postData: {},
         },
       });
       qc.invalidateQueries({ queryKey: ["favorites"] });
@@ -77,7 +77,8 @@ function FavoritesPage() {
       ) : (
         <div className="grid gap-4">
           {data.map((fav) => {
-            const post = fav.post_snapshot as PostItem;
+            const post = fav.post_data as PostItem & { _index?: number };
+            const postIndex = post._index ?? 0;
             return (
               <article
                 key={fav.id}
@@ -85,7 +86,7 @@ function FavoritesPage() {
               >
                 <Link
                   to="/plan/$id/post/$index"
-                  params={{ id: fav.plan_id, index: String(fav.post_index) }}
+                  params={{ id: fav.content_plan_id, index: String(postIndex) }}
                   className="absolute inset-0 z-10 rounded-2xl"
                   aria-label="Open execution plan"
                 />
@@ -101,11 +102,8 @@ function FavoritesPage() {
                     {post.pillar && <span>· {post.pillar}</span>}
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="truncate">
-                      From: {fav.plan_title ?? "Untitled plan"}
-                    </span>
                     <button
-                      onClick={() => remove(fav.plan_id, fav.post_index)}
+                      onClick={() => remove(fav.content_plan_id, fav.post_id)}
                       className="relative z-30 grid h-8 w-8 place-items-center rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
                       aria-label="Remove from Favorites"
                       title="Remove from Favorites"
