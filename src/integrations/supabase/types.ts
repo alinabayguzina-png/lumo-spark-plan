@@ -136,6 +136,48 @@ export type Database = {
           },
         ]
       }
+      favorites: {
+        Row: {
+          id: string
+          user_id: string
+          content_plan_id: string
+          post_id: string
+          post_data: Json
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id?: string
+          content_plan_id: string
+          post_id: string
+          post_data?: Json
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          content_plan_id?: string
+          post_id?: string
+          post_data?: Json
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "favorites_content_plan_id_fkey"
+            columns: ["content_plan_id"]
+            isOneToOne: false
+            referencedRelation: "content_plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "favorites_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
