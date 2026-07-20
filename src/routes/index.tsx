@@ -27,10 +27,10 @@ function Index() {
               <Sparkles className="h-3.5 w-3.5 text-primary" /> AI Content Strategist
             </span>
             <h1 className="text-display text-5xl font-semibold text-foreground sm:text-7xl">
-              A month of scroll-<span className="italic text-primary">stopping</span> content, in one click.
+              A week of scroll-<span className="italic text-primary">stopping</span> content, in one click.
             </h1>
             <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
-              Luzo AI studies your business and generates a full month of Reels, Shorts and post ideas
+              Luzo AI studies your business and generates a full week of Reels, Shorts and post ideas
               designed to grow your brand — hooks, concepts, captions and posting times, ready to shoot.
             </p>
             <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row">
@@ -53,11 +53,11 @@ function Index() {
             <div className="rounded-2xl border border-border bg-card p-6 shadow-2xl shadow-black/40">
               <div className="flex items-center justify-between border-b border-border pb-4">
                 <div>
-                  <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">March plan</div>
+                  <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">This week's plan</div>
                   <div className="font-display text-2xl">Elm & Oak Café</div>
                 </div>
                 <span className="rounded-full bg-primary/15 px-3 py-1 text-xs font-medium text-primary">
-                  24 posts · 3 platforms
+                  6 posts · 3 platforms
                 </span>
               </div>
               <div className="mt-6 grid gap-3 sm:grid-cols-3">
@@ -82,7 +82,7 @@ function Index() {
           <div className="max-w-2xl">
             <div className="text-xs uppercase tracking-[0.22em] text-primary">How it works</div>
             <h2 className="mt-3 text-display text-4xl font-semibold sm:text-5xl">
-              Three steps to a full month of content.
+              Three steps to a full week of content.
             </h2>
           </div>
           <div className="mt-14 grid gap-8 md:grid-cols-3">
@@ -147,7 +147,7 @@ function Index() {
       <section className="border-t border-border/60 py-24">
         <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
           <h2 className="text-display text-4xl font-semibold sm:text-5xl">
-            Your next month of content, generated tonight.
+            Your next week of content, generated tonight.
           </h2>
           <p className="mt-4 text-muted-foreground">
             Start free. Add your business in 2 minutes. Get a plan in 30 seconds.
@@ -179,7 +179,7 @@ const SAMPLE_POSTS = [
     platform: "Instagram",
     format: "Reel",
     title: "3 things nobody tells you about opening a café",
-    hook: "POV: your first month behind the counter…",
+    hook: "POV: your first week behind the counter…",
     icon: <Video className="h-3.5 w-3.5 text-primary" />,
   },
   {
@@ -205,8 +205,8 @@ const STEPS = [
     icon: <Wand2 className="h-5 w-5" />,
   },
   {
-    title: "Generate your month",
-    body: "Luzo studies your brand and drafts a full month of Reels, Shorts and posts.",
+    title: "Generate your week",
+    body: "Luzo studies your brand and drafts a full week of Reels, Shorts and posts.",
     icon: <Sparkles className="h-5 w-5" />,
   },
   {
@@ -221,13 +221,13 @@ const FEATURES = [
   "Video and photo concepts, not generic ‘post a quote’ ideas",
   "Platform-native formatting for Reels, TikTok, Shorts, LinkedIn, X",
   "Balanced content pillars: education, entertainment, social proof, BTS",
-  "Suggested posting dates and times for the whole month",
+  "Suggested posting dates and times for the whole week",
   "History of every plan you've ever generated",
 ];
 
 const FAQS = [
   { q: "Do I need to be a designer or writer?", a: "No. Luzo hands you hooks, captions and shot lists — you just point a camera." },
   { q: "Which platforms does Luzo cover?", a: "Instagram, TikTok, LinkedIn, X and YouTube Shorts. You pick which ones matter." },
-  { q: "How is a month structured?", a: "Roughly 4 posts/week across your platforms, balanced across content pillars." },
+  { q: "How is a week structured?", a: "Up to 7 posts across your platforms, balanced across content pillars." },
   { q: "Can I regenerate a plan?", a: "Yes — every plan is saved to your history and you can generate a new one anytime." },
 ];

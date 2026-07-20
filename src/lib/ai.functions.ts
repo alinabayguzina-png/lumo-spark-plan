@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 import {
-  HIDDEN_MONTHLY_CAP,
+  HIDDEN_WEEKLY_CAP,
   GENERIC_LIMIT_ERROR,
   normalizeTier,
 } from "./plan-limits";
@@ -14,7 +14,7 @@ const GenerateInput = z.object({
 });
 
 const SYSTEM = `You are Luzo AI, a senior social media strategist for growing brands.
-You design monthly content plans that maximize reach and community growth on Instagram, TikTok, LinkedIn, X and YouTube Shorts.
+You design weekly content plans that maximize reach and community growth on Instagram, TikTok, LinkedIn, X and YouTube Shorts.
 You think in HOOKS, PATTERNS and FORMATS that are proven to increase brand popularity: reactive trends, POV videos, behind-the-scenes, founder POVs, transformations, listicles, memes tailored to the niche, UGC prompts, and educational carousels.
 Every post idea is specific to the brand — never generic. Prefer Reels, Shorts, TikToks and photo posts over plain text.
 You always respond with STRICT JSON that matches the requested schema. No prose outside JSON.`;
@@ -29,9 +29,9 @@ function buildPrompt(biz: {
   platforms: string[];
   website: string | null;
 }, month: string, postsPerWeek: number, extra?: string) {
-  const total = postsPerWeek * 4;
+  const total = postsPerWeek;
   const platforms = biz.platforms.length ? biz.platforms.join(", ") : "Instagram, TikTok, LinkedIn";
-  return `Design a monthly social content plan for ${month}.
+  return `Design a one-week social content plan for ${month}.
 
 Brand: ${biz.business_name}
 Industry: ${biz.industry ?? "n/a"}
@@ -44,7 +44,7 @@ Active platforms: ${platforms}
 ${extra ? `Extra notes: ${extra}` : ""}
 
 Requirements:
-- Generate exactly ${total} posts (about ${postsPerWeek} per week for 4 weeks).
+- Generate exactly ${total} posts for a single week (${postsPerWeek} posts across 7 days).
 - Distribute across the active platforms above.
 - Bias toward Reels, TikToks, Shorts, carousels and photo posts that drive reach. Use plain text only on LinkedIn/X when it clearly fits.
 - Each post: one scroll-stopping hook, one short shootable concept, a tight caption, 5-8 hashtags, one CTA. Keep every field to one line. No filler.
@@ -53,7 +53,7 @@ Requirements:
 
 Respond with a JSON object of the exact shape:
 {
-  "theme": "one-line theme for the month",
+  "theme": "one-line theme for the week",
   "pillars": ["pillar 1", "pillar 2"],
   "posts": [
     {
@@ -156,7 +156,7 @@ export const generateContentPlan = createServerFn({ method: "POST" })
         );
       }
     } else {
-      const cap = HIDDEN_MONTHLY_CAP[tier];
+      const cap = HIDDEN_WEEKLY_CAP[tier];
       if (cap !== null) {
         const { count, error: countErr } = await sb
           .from("content_plans")

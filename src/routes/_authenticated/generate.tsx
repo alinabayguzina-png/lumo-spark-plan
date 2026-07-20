@@ -18,7 +18,7 @@ import {
 import { toast } from "sonner";
 import { Sparkles, Loader2 } from "lucide-react";
 import { useUsage } from "@/components/usage-badge";
-import { MONTHLY_PLAN_LIMIT, monthlyRemainingLabel, detailedRemainingLabel } from "@/lib/plan-limits";
+import { WEEKLY_PLAN_LIMIT, weeklyRemainingLabel, detailedRemainingLabel } from "@/lib/plan-limits";
 import { UpgradeLock } from "@/components/upgrade-lock";
 import { Progress } from "@/components/ui/progress";
 
@@ -122,7 +122,7 @@ function GeneratePage() {
     <div className="max-w-2xl">
       <div className="mb-8">
         <div className="text-xs uppercase tracking-[0.22em] text-primary">Step 2</div>
-        <h1 className="mt-1 text-display text-4xl font-semibold">Generate a monthly plan.</h1>
+        <h1 className="mt-1 text-display text-4xl font-semibold">Generate a weekly plan.</h1>
         <p className="mt-2 text-muted-foreground">
           For <span className="text-foreground">{biz.business_name}</span> · Platforms:{" "}
           {biz.platforms?.length ? biz.platforms.join(", ") : "not set"}
@@ -130,7 +130,7 @@ function GeneratePage() {
         {usage.data && (
           <div className="mt-4 flex flex-wrap gap-2 text-xs">
             <span className="rounded-full border border-border bg-secondary/40 px-3 py-1 text-muted-foreground">
-              {monthlyRemainingLabel(usage.data.tier, usage.data.monthlyPlansUsed)}
+              {weeklyRemainingLabel(usage.data.tier, usage.data.monthlyPlansUsed)}
             </span>
             <span className="rounded-full border border-border bg-secondary/40 px-3 py-1 text-muted-foreground">
               {detailedRemainingLabel(usage.data.tier, usage.data.detailedUsed)}
@@ -140,11 +140,11 @@ function GeneratePage() {
       </div>
 
       {usage.data &&
-        MONTHLY_PLAN_LIMIT[usage.data.tier] !== null &&
-        usage.data.monthlyPlansUsed >= (MONTHLY_PLAN_LIMIT[usage.data.tier] as number) && (
+        WEEKLY_PLAN_LIMIT[usage.data.tier] !== null &&
+        usage.data.monthlyPlansUsed >= (WEEKLY_PLAN_LIMIT[usage.data.tier] as number) && (
           <UpgradeLock
-            title="You've used your free monthly plan"
-            description="Upgrade to Pro or VIP for unlimited monthly content plans."
+            title="You've used your free weekly plan"
+            description="Upgrade to Pro or VIP for unlimited weekly content plans."
             className="mb-6"
           />
         )}
@@ -181,7 +181,7 @@ function GeneratePage() {
         </div>
 
         <div className="space-y-1.5">
-          <Label>Anything specific this month? (optional)</Label>
+          <Label>Anything specific this week? (optional)</Label>
           <Textarea
             value={notes}
             maxLength={2000}
@@ -194,7 +194,7 @@ function GeneratePage() {
         <Button type="submit" disabled={busy} size="lg" className="w-full">
           {busy ? (
             <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating your month…
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating your week…
             </>
           ) : (
             <>

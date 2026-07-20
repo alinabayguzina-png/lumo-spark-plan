@@ -75,18 +75,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Luzo AI — Monthly Social Content Plans, Generated" },
+      { title: "Luzo AI — Weekly Social Content Plans, Generated" },
       {
         name: "description",
         content:
-          "Luzo AI turns your business into a month of scroll-stopping social content ideas — captions, hooks, and video concepts across every platform.",
+          "Luzo AI turns your business into a week of scroll-stopping social content ideas — captions, hooks, and video concepts across every platform.",
       },
       { name: "author", content: "Luzo AI" },
-      { property: "og:title", content: "Luzo AI — Monthly Social Content Plans, Generated" },
+      { property: "og:title", content: "Luzo AI — Weekly Social Content Plans, Generated" },
       {
         property: "og:description",
         content:
-          "A month of social content for your brand in one click. Captions, hooks, and video concepts, generated with AI.",
+          "A week of social content for your brand in one click. Captions, hooks, and video concepts, generated with AI.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

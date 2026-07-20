@@ -33,13 +33,13 @@ function Dashboard() {
           </h1>
           <p className="mt-2 text-muted-foreground">
             {hasBiz
-              ? "Your brand is ready. Generate a new monthly content plan whenever you like."
+              ? "Your brand is ready. Generate a new weekly content plan whenever you like."
               : "Add your business info to unlock personalized content plans."}
           </p>
         </div>
         <Button asChild size="lg">
           <Link to={hasBiz ? "/generate" : "/business"}>
-            {hasBiz ? "Generate this month's plan" : "Add business info"}
+            {hasBiz ? "Generate this week's plan" : "Add business info"}
           </Link>
         </Button>
       </div>

@@ -22,7 +22,7 @@ const PLANS = [
     tag: "Try Luzo",
     desc: "For solo creators just getting started.",
     features: [
-      "1 Monthly Content Plan",
+      "1 Weekly Content Plan",
       "1 Execution Plan",
       "Basic hooks + captions",
       "Post history",
@@ -36,7 +36,7 @@ const PLANS = [
     tag: "Most popular",
     desc: "For founders posting weekly across platforms.",
     features: [
-      "Unlimited Monthly Content Plans",
+      "Unlimited Weekly Content Plans",
       "15 Execution Plans / month",
       "Scene-by-scene video breakdowns",
       "Slide-by-slide carousel plans",
@@ -47,11 +47,11 @@ const PLANS = [
   },
   {
     name: "VIP",
-    price: "$15",
+    price: "$19",
     tag: "For power users",
     desc: "For creators serious about going viral.",
     features: [
-      "Unlimited Monthly Content Plans",
+      "Unlimited Weekly Content Plans",
       "Unlimited Execution Plans",
       "Edit & regenerate any post",
       "Advanced viral tactics + retention loops",

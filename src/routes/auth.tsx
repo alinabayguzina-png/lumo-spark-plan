@@ -126,7 +126,7 @@ function AuthPage() {
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
             {mode === "signin"
-              ? "Sign in to generate your next month of content."
+              ? "Sign in to generate your next week of content."
               : "Start free. Your first plan is 60 seconds away."}
           </p>
 

@@ -2,7 +2,7 @@ import { Link, useRouter, useRouterState } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/lib/auth-hooks";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, Building2, Wand2, History, LogOut, Menu, Crown } from "lucide-react";
+import { LayoutDashboard, Building2, Wand2, History, LogOut, Menu, Crown, Heart } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState, type ReactNode } from "react";
 import { UsageBadge } from "@/components/usage-badge";
@@ -11,6 +11,7 @@ const NAV = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/business", label: "Business info", icon: Building2 },
   { to: "/generate", label: "Generate", icon: Wand2 },
+  { to: "/favorites", label: "Favorites", icon: Heart },
   { to: "/history", label: "History", icon: History },
 ] as const;
 
