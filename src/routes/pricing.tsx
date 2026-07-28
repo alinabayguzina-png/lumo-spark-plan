@@ -90,7 +90,7 @@ function Pricing() {
           apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
         },
         body: JSON.stringify({
-          plan,
+          tier: plan,
           origin: window.location.origin,
         }),
       });

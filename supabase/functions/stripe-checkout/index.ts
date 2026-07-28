@@ -12,13 +12,39 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
+    // ── Secret presence check (values never logged) ──────────────────────────
     const stripeSecretKey = Deno.env.get("STRIPE_SECRET_KEY");
     const proPriceId = Deno.env.get("STRIPE_PRO_PRICE_ID") ?? "price_1TvnN1DE7Dg6n9MX8u8Gk9qC";
     const vipPriceId = Deno.env.get("STRIPE_VIP_PRICE_ID") ?? "price_1TvnO3DE7Dg6n9MXr4X28qeB";
 
+    console.log("[stripe-checkout] secret check:", {
+      STRIPE_SECRET_KEY: stripeSecretKey ? "present" : "MISSING",
+      STRIPE_PRO_PRICE_ID: Deno.env.get("STRIPE_PRO_PRICE_ID") ? "present (env)" : "using hardcoded fallback",
+      STRIPE_VIP_PRICE_ID: Deno.env.get("STRIPE_VIP_PRICE_ID") ? "present (env)" : "using hardcoded fallback",
+      proPriceId,
+      vipPriceId,
+    });
+
+    // ── Test vs live mode ─────────────────────────────────────────────────────
+    if (stripeSecretKey) {
+      const mode = stripeSecretKey.startsWith("sk_live_")
+        ? "LIVE"
+        : stripeSecretKey.startsWith("sk_test_")
+        ? "TEST"
+        : "UNKNOWN";
+      const proMode = proPriceId.startsWith("price_") ? "unknown (need Stripe lookup)" : "unknown";
+      console.log("[stripe-checkout] key mode:", mode, "| pro price ID:", proPriceId, "| vip price ID:", vipPriceId);
+      if (mode === "LIVE") {
+        console.warn("[stripe-checkout] WARNING: using LIVE key — make sure price IDs are also LIVE mode prices");
+      } else if (mode === "TEST") {
+        console.log("[stripe-checkout] TEST mode — make sure price IDs are also TEST mode prices");
+      }
+    }
+
     if (!stripeSecretKey) {
+      console.error("[stripe-checkout] STRIPE_SECRET_KEY is not set");
       return new Response(
-        JSON.stringify({ error: "Stripe is not configured. Set STRIPE_SECRET_KEY." }),
+        JSON.stringify({ error: "Stripe is not configured. Set STRIPE_SECRET_KEY in Supabase Edge Function secrets." }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
@@ -28,6 +54,7 @@ Deno.serve(async (req: Request) => {
 
     const authHeader = req.headers.get("Authorization");
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      console.error("[stripe-checkout] missing or malformed Authorization header");
       return new Response(
         JSON.stringify({ error: "Unauthorized" }),
         { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } },
@@ -42,6 +69,7 @@ Deno.serve(async (req: Request) => {
 
     const { data: userData, error: userErr } = await supabase.auth.getUser(token);
     if (userErr || !userData.user) {
+      console.error("[stripe-checkout] auth.getUser failed:", userErr?.message);
       return new Response(
         JSON.stringify({ error: "Unauthorized" }),
         { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } },
@@ -50,18 +78,36 @@ Deno.serve(async (req: Request) => {
     const userId = userData.user.id;
     const userEmail = userData.user.email;
 
+    // ── Parse body — accept both "tier" and "plan" for compatibility ──────────
     const body = await req.json();
-    const plan = body?.plan;
-    if (plan !== "pro" && plan !== "vip") {
+    console.log("[stripe-checkout] received body keys:", Object.keys(body ?? {}));
+
+    const tier: string | undefined = body?.tier ?? body?.plan;
+    console.log("[stripe-checkout] resolved tier:", tier);
+
+    if (tier !== "pro" && tier !== "vip") {
+      console.error("[stripe-checkout] invalid tier value:", tier, "| raw body:", JSON.stringify(body));
       return new Response(
-        JSON.stringify({ error: "Invalid plan. Must be 'pro' or 'vip'." }),
+        JSON.stringify({
+          error: `Invalid tier. Must be 'pro' or 'vip'. Received: ${JSON.stringify(tier)}`,
+        }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 
-    const priceId = plan === "pro" ? proPriceId : vipPriceId;
-    const origin = body?.origin ?? req.headers.get("origin") ?? "http://localhost:3000";
+    const priceId = tier === "pro" ? proPriceId : vipPriceId;
+    const origin = body?.origin ?? req.headers.get("origin") ?? "https://localhost:3000";
 
+    console.log("[stripe-checkout] creating session:", {
+      tier,
+      priceId,
+      userId,
+      origin,
+      successUrl: `${origin}/pricing?checkout=success`,
+      cancelUrl: `${origin}/pricing?checkout=cancelled`,
+    });
+
+    // ── Stripe Checkout Session ───────────────────────────────────────────────
     const checkoutRes = await fetch("https://api.stripe.com/v1/checkout/sessions", {
       method: "POST",
       headers: {
@@ -77,7 +123,7 @@ Deno.serve(async (req: Request) => {
         cancel_url: `${origin}/pricing?checkout=cancelled`,
         client_reference_id: userId,
         "metadata[user_id]": userId,
-        "metadata[tier]": plan,
+        "metadata[tier]": tier,
         ...(userEmail ? { customer_email: userEmail } : {}),
       }),
     });
@@ -85,6 +131,14 @@ Deno.serve(async (req: Request) => {
     if (!checkoutRes.ok) {
       const errJson = await checkoutRes.json().catch(() => null);
       const stripeErr = errJson?.error ?? {};
+      console.error("[stripe-checkout] Stripe API error:", {
+        status: checkoutRes.status,
+        message: stripeErr.message,
+        type: stripeErr.type,
+        code: stripeErr.code,
+        param: stripeErr.param,
+        full: JSON.stringify(errJson),
+      });
       return new Response(
         JSON.stringify({
           error: stripeErr.message ?? `Stripe error ${checkoutRes.status}`,
@@ -97,11 +151,13 @@ Deno.serve(async (req: Request) => {
     }
 
     const session = await checkoutRes.json();
+    console.log("[stripe-checkout] session created:", session.id);
     return new Response(
       JSON.stringify({ url: session.url }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   } catch (err) {
+    console.error("[stripe-checkout] unhandled exception:", err instanceof Error ? err.message : err);
     return new Response(
       JSON.stringify({ error: err instanceof Error ? err.message : "Internal error" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
