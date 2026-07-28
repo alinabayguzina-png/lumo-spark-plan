@@ -1,0 +1,137 @@
+I need you to debug an existing Stripe subscription integration for my SaaS app.
+You are acting as a senior full-stack engineer specializing in:
+Stripe API
+Supabase Edge Functions
+TypeScript/Deno
+React
+SaaS subscriptions
+Project
+App: Luzo AI
+Purpose:
+AI content generator for businesses.
+Stack:
+React frontend
+Supabase Auth
+Supabase Database
+Supabase Edge Functions
+Stripe subscriptions
+Gemini API
+Current status
+Already working:
+✅ Website works
+✅ Authentication works (Google OAuth + email auth)
+✅ Gemini content generation works
+✅ Database saving works
+✅ Favorites feature works
+✅ UI is finished
+Only Stripe subscription flow is broken.
+Stripe plans
+Pro:
+$9/month
+Price ID:
+price_1TvnN1DE7Dg6n9MX8u8Gk9qC
+VIP:
+$19/month
+Price ID:
+price_1TvnO3DE7Dg6n9MXr4X28qeB
+Database
+profiles table:
+id
+plan
+Possible values:
+free
+pro
+vip
+subscriptions table:
+id
+user_id (UNIQUE)
+stripe_customer_id
+stripe_subscription_id
+plan
+status
+current_period_end
+created_at
+One user should have only one subscription row.
+Stripe functions
+I have:
+stripe-checkout Edge Function
+Purpose:
+receive selected plan
+verify Supabase user
+create Stripe Checkout Session
+return Checkout URL
+stripe-webhook Edge Function
+Purpose:
+Handle:
+checkout.session.completed
+customer.subscription.updated
+customer.subscription.deleted
+Update:
+subscriptions table
+profiles.plan
+Webhook uses service_role.
+Current problem
+When clicking:
+“Choose Pro”
+or
+“Go VIP”
+I get:
+Checkout failed (400)
+The checkout page from Stripe does NOT open.
+Important:
+This happens before payment, so webhook is probably not the issue.
+Previous investigation found a possible issue:
+Frontend may send:
+{
+  "plan": "pro"
+}
+but stripe-checkout expects:
+{
+  "tier": "pro"
+}
+If this is true, fix only the parameter name.
+Possible other issues to check:
+Stripe environment variables:
+STRIPE_SECRET_KEY
+STRIPE_PRO_PRICE_ID
+STRIPE_VIP_PRICE_ID
+STRIPE_CHECKOUT_SUCCESS_URL
+STRIPE_CHECKOUT_CANCEL_URL
+Test vs Live mode mismatch:
+Does STRIPE_SECRET_KEY match the mode of the Price IDs?
+Stripe Checkout Session creation:
+Check:
+mode should be “subscription”
+line_items should contain the correct price
+success_url must be absolute https URL
+cancel_url must be absolute https URL
+metadata should contain:
+
+
+user_id
+tier
+Error handling:
+Currently the frontend only shows:
+“Checkout failed (400)”
+I need detailed Stripe errors:
+error.message
+error.type
+error.code
+error.param
+Your task
+Do NOT rewrite the project.
+Do NOT touch:
+authentication
+Gemini
+content generation
+favorites
+database structure
+UI
+Only debug Stripe checkout.
+First:
+Ask me for the exact files you need.
+Inspect the code.
+Find the exact cause of HTTP 400.
+Explain the cause.
+Give the smallest possible fix.
+Do not guess.

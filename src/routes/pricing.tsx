@@ -96,8 +96,13 @@ function Pricing() {
       });
 
       if (!res.ok) {
-        const errBody = await res.json().catch(() => ({}));
-        throw new Error(errBody?.error ?? `Checkout failed (${res.status})`);
+        const errBody = await res.json().catch(() => null);
+        const msg =
+          errBody?.error ??
+          errBody?.message ??
+          (errBody ? JSON.stringify(errBody) : null) ??
+          `Checkout failed (${res.status})`;
+        throw new Error(msg);
       }
 
       const data = await res.json();

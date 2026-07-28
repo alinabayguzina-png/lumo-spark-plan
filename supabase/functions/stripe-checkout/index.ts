@@ -76,14 +76,22 @@ Deno.serve(async (req: Request) => {
         success_url: `${origin}/pricing?checkout=success`,
         cancel_url: `${origin}/pricing?checkout=cancelled`,
         client_reference_id: userId,
+        "metadata[user_id]": userId,
+        "metadata[tier]": plan,
         ...(userEmail ? { customer_email: userEmail } : {}),
       }),
     });
 
     if (!checkoutRes.ok) {
-      const errText = await checkoutRes.text();
+      const errJson = await checkoutRes.json().catch(() => null);
+      const stripeErr = errJson?.error ?? {};
       return new Response(
-        JSON.stringify({ error: `Stripe error: ${checkoutRes.status} ${errText.slice(0, 200)}` }),
+        JSON.stringify({
+          error: stripeErr.message ?? `Stripe error ${checkoutRes.status}`,
+          stripe_type: stripeErr.type ?? null,
+          stripe_code: stripeErr.code ?? null,
+          stripe_param: stripeErr.param ?? null,
+        }),
         { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
