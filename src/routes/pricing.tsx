@@ -213,10 +213,7 @@ function Pricing() {
               );
             })}
           </div>
-          <p className="mt-10 text-center text-xs text-muted-foreground">
-            Prices shown are for illustration. Billing is not enabled yet in this preview.
-          </p>
-          <p className="mt-4 text-center text-sm text-muted-foreground">
+          <p className="mt-10 text-center text-sm text-muted-foreground">
             Need help? Contact our support team:{" "}
             <a href="mailto:luzoaisupport@gmail.com" className="text-primary hover:underline">
               luzoaisupport@gmail.com
