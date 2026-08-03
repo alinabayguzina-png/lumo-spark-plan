@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
+import { SiteFooter } from "@/components/site-footer";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -114,7 +115,7 @@ function AuthPage() {
   }
 
   return (
-    <div className="relative min-h-screen bg-background">
+    <div className="relative min-h-screen bg-background flex flex-col">
       <div className="absolute inset-0 bg-grid opacity-30" aria-hidden />
       <div className="relative mx-auto flex min-h-screen max-w-md flex-col justify-center px-4 py-16">
         <Link to="/" className="mb-10 flex items-center gap-2 self-start text-sm text-muted-foreground hover:text-foreground">
@@ -177,6 +178,7 @@ function AuthPage() {
           </button>
         </div>
       </div>
+      <SiteFooter />
     </div>
   );
 }

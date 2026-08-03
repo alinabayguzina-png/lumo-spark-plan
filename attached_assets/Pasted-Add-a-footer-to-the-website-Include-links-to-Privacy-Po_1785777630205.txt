@@ -1,0 +1,84 @@
+Add a footer to the website. Include links to:
+
+* Privacy Policy (/privacy)
+* Terms of Service (/terms)
+* Contact email: luzoaisupport@gmail.com
+
+Make the footer match the existing Luzo AI design.
+
+
+Create a complete Terms of Service page for my Luzo AI website.
+
+Add it as a new route/page:
+/terms
+
+Design requirements:
+
+* Match the existing Luzo AI website style.
+* Make it look like a real SaaS startup legal page.
+* Add proper spacing, typography, and responsive design.
+* Include a link back to the main website.
+
+Business information:
+
+* Product name: Luzo AI
+* Website: https://luzoai.com
+* Contact email: luzoaisupport@gmail.com
+* Luzo AI is an AI-powered SaaS platform that helps creators and businesses generate social media content plans and execution strategies.
+
+Write the Terms of Service with these sections:
+
+1. Acceptance of Terms
+    Explain that using Luzo AI means users agree to these terms.
+2. Description of Service
+    Explain that Luzo AI provides AI-generated content planning, ideas, strategies, and related tools.
+3. User Accounts
+    Include:
+
+* users must provide accurate information;
+* users are responsible for account security;
+* accounts cannot be shared improperly.
+
+4. Subscriptions and Payments
+    Include:
+
+* Pro plan: $9/month
+* VIP plan: $19/month
+* payments processed through Stripe;
+* subscriptions automatically renew unless canceled;
+* prices may change with notice.
+
+5. Cancellation and Refunds
+    Explain cancellation terms and that users can cancel future renewals.
+6. Acceptable Use
+    Users cannot:
+
+* abuse the service;
+* attempt to break security;
+* use it for illegal activities;
+* misuse generated content.
+
+7. AI-Generated Content Disclaimer
+    Explain:
+
+* AI outputs may not always be accurate;
+* users should review content before publishing;
+* Luzo AI does not guarantee specific results.
+
+8. Intellectual Property
+    Explain ownership of:
+
+* Luzo AI software and branding;
+* user-generated inputs and outputs.
+
+9. Service Availability
+    Explain that the service may change, improve, or temporarily become unavailable.
+10. Limitation of Liability
+    Include reasonable startup SaaS limitations.
+11. Changes to Terms
+    Explain terms may be updated.
+12. Contact
+    Include:
+    luzoaisupport@gmail.com
+
+Use clear professional language suitable for an early-stage SaaS company.

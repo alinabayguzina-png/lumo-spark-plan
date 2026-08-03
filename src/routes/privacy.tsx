@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
 
 export const Route = createFileRoute("/privacy")({
   head: () => ({
@@ -370,10 +371,10 @@ const sections = [
 
 function PrivacyPolicy() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground flex flex-col">
       <SiteHeader />
 
-      <main className="mx-auto max-w-3xl px-4 py-16 sm:px-6 sm:py-24">
+      <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-16 sm:px-6 sm:py-24">
         {/* Header */}
         <div className="mb-12">
           <div className="text-xs uppercase tracking-[0.22em] text-primary">Legal</div>
@@ -443,6 +444,7 @@ function PrivacyPolicy() {
           </div>
         </div>
       </main>
+      <SiteFooter />
     </div>
   );
 }

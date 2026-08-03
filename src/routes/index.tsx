@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
 import { Button } from "@/components/ui/button";
 import { Sparkles, Wand2, Calendar, BarChart3, Video, Camera, ArrowRight, Check } from "lucide-react";
 
@@ -158,18 +159,7 @@ function Index() {
         </div>
       </section>
 
-      <footer className="border-t border-border/60 py-10">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 text-sm text-muted-foreground sm:flex-row sm:px-6">
-          <span>© {new Date().getFullYear()} Luzo AI. Built for creators.</span>
-          <div className="flex flex-wrap items-center gap-6">
-            <Link to="/pricing" className="hover:text-foreground">Pricing</Link>
-            <a href="/#faq" className="hover:text-foreground">FAQ</a>
-            <a href="mailto:luzoaisupport@gmail.com" className="hover:text-foreground">
-              Support: luzoaisupport@gmail.com
-            </a>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

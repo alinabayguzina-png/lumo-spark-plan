@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
 import { Button } from "@/components/ui/button";
 import { Check, Loader2 } from "lucide-react";
 import { useSession } from "@/lib/auth-hooks";
@@ -118,7 +119,7 @@ function Pricing() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground flex flex-col">
       <SiteHeader />
       <section className="relative overflow-hidden py-24">
         <div className="absolute inset-0 bg-grid opacity-30" aria-hidden />
@@ -221,6 +222,7 @@ function Pricing() {
           </p>
         </div>
       </section>
+      <SiteFooter />
     </div>
   );
 }
